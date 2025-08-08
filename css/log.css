@@ -174,3 +174,7 @@ p{
     border-radius: 50%;
     cursor: pointer;
 }
+
+button{
+    color: black;
+}
