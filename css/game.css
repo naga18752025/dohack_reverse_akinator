@@ -120,13 +120,14 @@ body {
 .question::before{
     content: '';
     position: absolute;
-    top: 30%;
-    left: -1.4vw; 
+    top: 50%;
+    left: -1.1vh;
+    transform: translate(0, -50%);
     width: 0;
     height: 0;
-    border-top: 1vw solid transparent;
-    border-bottom: 1vw solid transparent;
-    border-right: 1.5vw solid white; 
+    border-top: 1.8vh solid transparent;
+    border-bottom: 1.8vh solid transparent;
+    border-right: 2.0vh solid white; 
 }
 
 .response{
