@@ -7,8 +7,12 @@ let selectedCharacter = null;
  * ゲーム開始：AIにキャラクターを選んでもらう
  */
 async function startGame() {
-  const sessions = await getRecentSessionsWithQuestions(1, 20);
-  const themeLog = sessions.map(session => session.correct_answer);
+  try {
+    const sessions = await getRecentSessionsWithQuestions(1, 20);
+    themeLog = sessions.map(session => session.correct_answer);
+  } catch {
+    themeLog = ["ねこ", "さくら"];
+  }
   const prompt = `
   次の6つのカテゴリのうち1つを、**無作為に1つだけ選んで**ください。
   そのカテゴリに該当する、日本人の多くが知っている「名詞」を1つだけ思い浮かべてください。
