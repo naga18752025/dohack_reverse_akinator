@@ -24,8 +24,11 @@ async function main() {
     }else{
         document.getElementById("loading3").style.display = "none";
         startTimer(); // タイマーを開始
-        const session = await createSession(theme);
-        sessionId = session.id;
+        try {
+            const session = await createSession(theme);
+            sessionId = session.id;
+        } catch {
+        };
     }
 }
 main();
@@ -144,7 +147,10 @@ async function questionCheck(){
     lastComment.innerHTML = "";
     lastComment.textContent = response;
     question = document.getElementById("question-input").value;
-    await addQuestion(sessionId, question, response);
+    try {
+        await addQuestion(sessionId, question, response);
+    } catch{
+    }
     document.getElementById("buttons").style.display = "flex";
     document.getElementById("question-input").value = ""; 
 }
@@ -196,7 +202,10 @@ async function answerCheck(){
         wrongAnswer();
     };
     document.getElementById("checked-answer").textContent = document.getElementById("answer-input").value;
-    await updateSession(sessionId, document.getElementById("answer-input").value, stopTimer());
+    try {
+        await updateSession(sessionId, document.getElementById("answer-input").value, stopTimer());
+    } catch{
+    }
 }
 
 // 解答が正しかった場合

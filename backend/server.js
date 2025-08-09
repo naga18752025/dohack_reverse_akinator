@@ -49,4 +49,4 @@ app.post("/api/openai", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 3001, () => console.log("サーバー起動: http://localhost:3001"));
+app.listen(process.env.PORT || 3001, () => console.log("サーバー起動"));
