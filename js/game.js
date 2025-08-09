@@ -8,6 +8,15 @@ async function fetchTheme(){
     return theme;
 }
 async function main() {
+
+    if(localStorage.getItem("reload") === "none"){
+        localStorage.setItem("reload", "done");
+    }else{
+        alert("不正な操作を検知しました。");
+        window.location.href = "index.html";
+        return;
+    }
+
     theme = await fetchTheme(); // ←ここでPromiseを「開封」！
     if (!theme) {
         alert("ゲーム開始に失敗しました。もう一度試してください。");

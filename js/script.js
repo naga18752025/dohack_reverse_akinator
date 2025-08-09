@@ -1,5 +1,6 @@
 function gameStart(){
     document.getElementById("loading3").style.display = "flex";
+    localStorage.setItem("reload", "none");
     window.location.href = "game.html";
 }
 
