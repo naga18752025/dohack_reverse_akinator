@@ -58,10 +58,12 @@ async function loadInitialHistory() {
         renderHistory(sessions);
         currentPage++;
     }
+    document.getElementById("loading3").style.display = "none";
 }
 
 // 「もっと見る」ボタン処理
 async function loadMoreHistory() {
+    document.getElementById("loading3").style.display = "flex";
     const sessions = await getRecentSessionsWithQuestions(currentPage, pageSize);
     if (sessions && sessions.length > 0) {
         log = log.concat(sessions);
@@ -71,6 +73,7 @@ async function loadMoreHistory() {
         alert("これ以上の履歴はありません。");
         document.getElementById("load-more-button").disabled = true;
     }
+    document.getElementById("loading3").style.display = "none";
 }
 
 const modal = document.getElementById("modal");
