@@ -4,7 +4,14 @@ import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: "https://naga18752025.github.io",
+  methods: ["GET", "POST"],
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // 環境変数から読み込む（RenderのDashboardで設定）
