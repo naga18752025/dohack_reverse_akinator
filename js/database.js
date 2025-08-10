@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3002"; 
+const API_URL = "https://dohack-reverse-akinator2.onrender.com"; 
 
 // 関数名・返り値はそのままにして中身をAPI呼び出しに置き換え
 async function createSession(correctAnswer) {
