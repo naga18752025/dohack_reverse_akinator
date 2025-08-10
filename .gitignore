@@ -6,6 +6,10 @@ backend/node_modules/
 backend/npm-debug.log*
 backend/yarn-debug.log*
 backend/yarn-error.log*
+backend2/node_modules/
+backend2/npm-debug.log*
+backend2/yarn-debug.log*
+backend2/yarn-error.log*
 
 # OS関連ファイル
 .DS_Store

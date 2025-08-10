@@ -12,13 +12,15 @@
 </head>
 <body>
     <div id="top-logo">
-        <img src="images/title.png" alt="逆アキネーター" id="logo">
+        <img src="images/title.png" alt="逆アキネーター" id="logo" draggable="false" oncontextmenu="return false;" ontouchstart="return false;">
     </div>
+
     <div id="window">
         <div id="upper-buttons">
             <div id="timer">00:00</div>
             <button id="quit" onclick="gameQuit()">中断する</button>
         </div>
+
         <div id="response-display">
             <div id="comments">
                 <div class="response">私の思い浮かべているものを当ててください</div>
@@ -32,28 +34,33 @@
             <img src="images/responser.png" alt="回答者" id="main-owl" draggable="false" oncontextmenu="return false;" ontouchstart="return false;">
         </div>
     </div>
+
     <div id="buttons">
         <button id="question-button" onclick="questionFormOpen()">質問する（残り<span id="question-remain"></span>回まで）</button>
         <button id="answer-button" onclick="answerFormOpen()">解答する</button>
     </div>
+
     <div id="question-form" style="display: none;">
         <p id="question-text">質問を入力してください</p>
         <input type="text" id="question-input" placeholder="例：それは〜なものですか">
         <button id="question-confirmed" onclick="questionAdd()">決定</button>
         <button id="question-back" onclick="questionFormClose()">戻る</button>
     </div>
+
     <div id="answer-form" style="display: none;">
         <p id="answer-text">解答を全て<span style="color: red;;">ひらがな</span>で入力してください</p>
         <input type="text" id="answer-input" placeholder="例：ふくろう">
         <button id="answer-confirmed" onclick="answerCheck()">決定</button>
         <button id="answer-back" onclick="answerFormClose()">戻る</button>
     </div>
+
     <div id="result" style="display: none;">
         <div id="final-answer">あなたの解答：<span id="checked-answer"></span></div>
         <div id="SorF"></div>
         <div id="last-message">また遊んでね</div>
         <button id="finish-button" onclick="finishGame()">終了</button>
     </div>
+
     <div id="loading3">
         <div class="square-move-2"></div>
     </div>
