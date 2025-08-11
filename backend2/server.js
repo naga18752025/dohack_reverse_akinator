@@ -57,12 +57,10 @@ app.post("/add-question", async (req, res) => {
 
 // 履歴取得（ページネーション）
 app.get("/get-recent-sessions", async (req, res) => {
-  const page = parseInt(req.query.page || "1");
   const size = parseInt(req.query.size || "15");
-  const from = (page - 1) * size;
-  const to = from + size - 1;
+  const after = req.query.after; // ISO8601形式の日時文字列を期待
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("sessions")
     .select(`
       id,
@@ -76,8 +74,14 @@ app.get("/get-recent-sessions", async (req, res) => {
         created_at
       )
     `)
-    .order("created_at", { ascending: false })
-    .range(from, to);
+    .order("created_at", { ascending: false }) // 新しい順
+
+  if (after) {
+    // afterより**古い**（小さい）created_atを取得
+    query = query.lt("created_at", after);
+  }
+
+  const { data, error } = await query.limit(size);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);

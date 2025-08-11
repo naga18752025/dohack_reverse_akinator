@@ -30,8 +30,12 @@ async function addQuestion(sessionId, questionText, responseText) {
   return await res.json();
 }
 
-async function getRecentSessionsWithQuestions(page = 1, size = 15) {
-  const res = await fetch(`${API_URL}/get-recent-sessions?page=${page}&size=${size}`);
+async function getRecentSessionsWithQuestions(after = null, size = 15) {
+  const url = after 
+    ? `${API_URL}/get-recent-sessions?after=${encodeURIComponent(after)}&size=${size}`
+    : `${API_URL}/get-recent-sessions?size=${size}`;
+  
+  const res = await fetch(url);
   if (!res.ok) return null;
   return await res.json();
 }

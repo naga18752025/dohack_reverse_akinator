@@ -63,13 +63,20 @@ async function loadInitialHistory() {
 }
 
 // 「もっと見る」ボタン処理
+let lastFetchedAt = null; // 最後に取得した履歴の日時（ISO文字列）
+
 async function loadMoreHistory() {
     document.getElementById("loading3").style.display = "flex";
-    const sessions = await getRecentSessionsWithQuestions(currentPage, pageSize);
+    
+    const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+    
     if (sessions && sessions.length > 0) {
         log = log.concat(sessions);
+        
+        // 最後に取得したセッションの日時を更新
+        lastFetchedAt = sessions[sessions.length - 1].created_at;
+        
         renderHistory(sessions);
-        currentPage++;
         document.getElementById("loading3").style.display = "none";
     } else {
         alert("これ以上の履歴はありません。");
