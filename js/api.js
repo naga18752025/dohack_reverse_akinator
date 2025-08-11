@@ -8,7 +8,7 @@ let selectedCharacter = null;
  */
 async function startGame() {
   try {
-    const sessions = await getRecentSessionsWithQuestions(1, 20);
+    const sessions = await getRecentSessionsWithQuestions(null, 20);
     themeLog = sessions.map(session => session.correct_answer);
   } catch {
     themeLog = ["ねこ", "さくら"];
