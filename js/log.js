@@ -5,8 +5,8 @@ function back(){
 
 let log = [];
 let loadCount = 1;
-let currentPage = 1;
 const pageSize = 5;
+let lastFetchedAt = null;
 
 function renderHistory(sessions) {
     const container = document.getElementById("log-list");
@@ -52,19 +52,17 @@ function renderHistory(sessions) {
 
 // 初回読み込み
 async function loadInitialHistory() {
-    const sessions = await getRecentSessionsWithQuestions(currentPage, pageSize);
+    const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
     if (sessions) {
         log = log.concat(sessions);
         renderHistory(sessions);
-        currentPage++;
+        lastFetchedAt = sessions[sessions.length - 1].created_at;
         document.getElementById("loading3").style.display = "none";
     }
     
 }
 
 // 「もっと見る」ボタン処理
-let lastFetchedAt = null; // 最後に取得した履歴の日時（ISO文字列）
-
 async function loadMoreHistory() {
     document.getElementById("loading3").style.display = "flex";
     
