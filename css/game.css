@@ -120,6 +120,7 @@ body {
 .question::before{
     content: '';
     position: absolute;
+    z-index: -1; 
     top: 50%;
     left: -1.1vh;
     transform: translate(0, -50%);
@@ -144,6 +145,7 @@ body {
 .response::before{
     content: '';
     position: absolute;
+    z-index: -1; 
     top: 50%; 
     transform: translate(0, -50%);
     right: -1.1vh; 
