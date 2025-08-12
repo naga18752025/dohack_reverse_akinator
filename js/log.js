@@ -9,12 +9,12 @@ function startLoading() {
 }
 
 function stopLoading() {
-    document.getElementById("loading3").style.display = "none";
-    document.getElementById("long-loading").style.display = "none";
-
     // タイマー解除（途中で終わっても表示されないように）
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
+
+    document.getElementById("loading3").style.display = "none";
+    document.getElementById("long-loading").style.display = "none";
 }
 
 function back(){
