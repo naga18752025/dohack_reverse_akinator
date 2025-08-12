@@ -5,7 +5,7 @@ function startLoading() {
     // 10秒後に「お待ちください」メッセージを表示
     loadingTimeout = setTimeout(() => {
         document.getElementById("long-loading").style.display = "block";
-    }, 10000);
+    }, 4000);
 }
 
 function stopLoading() {
