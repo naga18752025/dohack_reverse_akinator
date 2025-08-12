@@ -200,6 +200,17 @@ button{
     align-items: center;
 }
 
+#long-loading{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-size: min(2.0vh, 3.0vw);
+    z-index: 10000;
+}
+
 .square-move-2 {
     --size: 5vh;
     --color: currentColor;

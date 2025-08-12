@@ -1,3 +1,27 @@
+let loadingTimeout = null;
+
+function startLoading() {
+    document.getElementById("loading3").style.display = "flex";
+    // 10秒後に「お待ちください」メッセージを表示
+    loadingTimeout = setTimeout(() => {
+        document.getElementById("long-loading").style.display = "block";
+    }, 10000);
+}
+
+function stopLoading() {
+    document.getElementById("loading3").style.display = "none";
+    document.getElementById("long-loading").style.display = "none";
+
+    // タイマー解除（途中で終わっても表示されないように）
+    clearTimeout(loadingTimeout);
+    loadingTimeout = null;
+}
+
+function back(){
+    document.getElementById("loading3").style.display = "flex";
+    window.location.href = "index.html";
+}
+
 let theme = null;
 let sessionId = null;
 let question = null;
@@ -8,6 +32,7 @@ async function fetchTheme(){
     return theme;
 }
 async function main() {
+    startLoading(); // ローディング開始
 
     if(localStorage.getItem("reload") === "none"){
         localStorage.setItem("reload", "done");
@@ -22,7 +47,7 @@ async function main() {
         alert("ゲーム開始に失敗しました。もう一度試してください。");
         window.location.href = "index.html";
     }else{
-        document.getElementById("loading3").style.display = "none";
+        stopLoading(); // ローディング終了
         startTimer(); // タイマーを開始
         try {
             const session = await createSession(theme);

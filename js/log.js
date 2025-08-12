@@ -1,3 +1,22 @@
+let loadingTimeout = null;
+
+function startLoading() {
+    document.getElementById("loading3").style.display = "flex";
+    // 10秒後に「お待ちください」メッセージを表示
+    loadingTimeout = setTimeout(() => {
+        document.getElementById("long-loading").style.display = "block";
+    }, 10000);
+}
+
+function stopLoading() {
+    document.getElementById("loading3").style.display = "none";
+    document.getElementById("long-loading").style.display = "none";
+
+    // タイマー解除（途中で終わっても表示されないように）
+    clearTimeout(loadingTimeout);
+    loadingTimeout = null;
+}
+
 function back(){
     document.getElementById("loading3").style.display = "flex";
     window.location.href = "index.html";
@@ -52,34 +71,52 @@ function renderHistory(sessions) {
 
 // 初回読み込み
 async function loadInitialHistory() {
-    const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
-    if (sessions) {
+    startLoading();
+    try {
+        const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+
+        if (!sessions || sessions.length === 0) {
+            alert("履歴が取得できませんでした。");
+            return;
+        }
+
         log = log.concat(sessions);
         renderHistory(sessions);
         lastFetchedAt = sessions[sessions.length - 1].created_at;
-        document.getElementById("loading3").style.display = "none";
+
+    } catch (error) {
+        console.error("履歴取得エラー:", error);
+        alert("履歴の読み込み中にエラーが発生しました。");
+    } finally {
+        // 成功・失敗に関係なく必ず実行
+        stopLoading();
     }
-    
 }
 
 // 「もっと見る」ボタン処理
 async function loadMoreHistory() {
-    document.getElementById("loading3").style.display = "flex";
-    
-    const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
-    
-    if (sessions && sessions.length > 0) {
+    startLoading();
+    try {
+        const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+
+        if (!sessions || sessions.length === 0) {
+            alert("これ以上の履歴はありません。");
+            document.getElementById("load-more-button").disabled = true;
+            return;
+        }
+
         log = log.concat(sessions);
         
         // 最後に取得したセッションの日時を更新
         lastFetchedAt = sessions[sessions.length - 1].created_at;
-        
+
         renderHistory(sessions);
-        document.getElementById("loading3").style.display = "none";
-    } else {
-        alert("これ以上の履歴はありません。");
-        document.getElementById("load-more-button").disabled = true;
-        document.getElementById("loading3").style.display = "none";
+
+    } catch (error) {
+        console.error("履歴追加取得エラー:", error);
+        alert("履歴の読み込み中にエラーが発生しました。");
+    } finally {
+        stopLoading();
     }
 }
 
