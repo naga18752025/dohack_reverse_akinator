@@ -1,4 +1,4 @@
-const realPrompt = null;
+let realPrompt = null;
 
 const express = require("express");
 const cors = require("cors");
