@@ -182,6 +182,11 @@ async function questionCheck(){
 
 // 解答の決定工程
 async function answerCheck(){
+    const re = /^[\p{Script=Hiragana}\u30FC]+$/u;
+    if(!re.test(document.getElementById("answer-input").value.trim())){
+        alert("解答はひらがなで入力してください");
+        return;
+    }
 
     // 本当にこの解答でいいのかを確認
     const result = confirm("本当にこの内容で解答しますか？");
@@ -216,7 +221,7 @@ async function answerCheck(){
     comments.scrollTop = document.getElementById("comments").scrollHeight; // コメント欄の一番下まで移動させる
 
     // 利用者の解答をhtmlに追加しておく
-    document.getElementById("checked-answer").textContent = document.getElementById("answer-input").value;
+    document.getElementById("checked-answer").textContent = document.getElementById("answer-input").value.trim();
 
     answerFormClose();
     document.getElementById("buttons").style.display = "none";
@@ -226,7 +231,7 @@ async function answerCheck(){
     }else{
         wrongAnswer();
     };
-    document.getElementById("checked-answer").textContent = document.getElementById("answer-input").value;
+
     try {
         await updateSession(sessionId, document.getElementById("answer-input").value, stopTimer());
     } catch{
