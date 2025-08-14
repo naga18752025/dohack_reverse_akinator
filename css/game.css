@@ -472,3 +472,55 @@ body {
 button{
     color: black;
 }
+
+#mole-game-container {
+    position: absolute;
+    bottom: 25%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+}
+
+#mole-game-title {
+    font-size: min(1.5vh, 2.5vw);
+    color: white;
+    margin-bottom: 1vh;
+}
+
+.mole-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #7ec850;
+    border-radius: 1vh;
+    cursor: pointer;
+}
+.mole {
+    width: min(11vw, 5.5vh);
+    height: min(11vw, 5.5vh);
+    background: brown;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+#moles-game{
+    display: grid;
+    grid-template-columns: repeat(3, 20vw);
+    grid-template-rows: repeat(2, 10vh);
+    gap: min(1vh, 2vw);
+    background: #ccc;
+    padding: min(1vh, 2vw);
+    border-radius: 1vh;
+}
+
+#score-display {
+    font-size: min(1.5vh, 2.5vw);
+    color: white;
+    margin-top: 1vh;
+    text-align: center;
+}

@@ -5,6 +5,7 @@ function startLoading() {
     // 10秒後に「お待ちください」メッセージを表示
     loadingTimeout = setTimeout(() => {
         document.getElementById("long-loading").style.display = "block";
+        document.getElementById("mole-game-container").style.display = "block";
     }, 4000);
 }
 
@@ -15,6 +16,7 @@ function stopLoading() {
 
     document.getElementById("loading3").style.display = "none";
     document.getElementById("long-loading").style.display = "none";
+    document.getElementById("mole-game-container").style.display = "none";
 }
 
 function back(){
@@ -70,27 +72,37 @@ function renderHistory(sessions) {
 }
 
 // 初回読み込み
-async function loadInitialHistory() {
+async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
     startLoading();
-    try {
-        const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
 
-        if (!sessions || sessions.length === 0) {
-            alert("履歴が取得できませんでした。");
-            return;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            console.log(`履歴取得 試行${attempt}回目`);
+            const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+
+            if (sessions && sessions.length > 0) {
+                log = log.concat(sessions);
+                renderHistory(sessions);
+                lastFetchedAt = sessions[sessions.length - 1].created_at;
+                console.log("履歴取得成功");
+                return; // 成功したら終了
+            } else {
+                console.warn(`履歴なし (${attempt}回目)`);
+            }
+
+        } catch (error) {
+            console.error(`履歴取得エラー (${attempt}回目):`, error);
         }
 
-        log = log.concat(sessions);
-        renderHistory(sessions);
-        lastFetchedAt = sessions[sessions.length - 1].created_at;
-
-    } catch (error) {
-        console.error("履歴取得エラー:", error);
-        alert("履歴の読み込み中にエラーが発生しました。");
-    } finally {
-        // 成功・失敗に関係なく必ず実行
-        stopLoading();
+        // 最終試行でなければ待機
+        if (attempt < maxRetries) {
+            console.log(`${retryInterval}ms 待機して再試行...`);
+            await new Promise(resolve => setTimeout(resolve, retryInterval));
+        }
     }
+
+    alert("履歴の取得に失敗しました。");
+    stopLoading();
 }
 
 // 「もっと見る」ボタン処理

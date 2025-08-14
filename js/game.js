@@ -5,6 +5,7 @@ function startLoading() {
     // 10秒後に「お待ちください」メッセージを表示
     loadingTimeout = setTimeout(() => {
         document.getElementById("long-loading").style.display = "block";
+        document.getElementById("mole-game-container").style.display = "block";
     }, 4000);
 }
 
@@ -15,6 +16,7 @@ function stopLoading() {
 
     document.getElementById("loading3").style.display = "none";
     document.getElementById("long-loading").style.display = "none";
+    document.getElementById("mole-game-container").style.display = "none";
 }
 
 function back(){
@@ -27,10 +29,26 @@ let sessionId = null;
 let question = null;
 let response = null;
 
-async function fetchTheme(){
-    const { character: theme } = await startGame();
-    return theme;
+async function fetchTheme(maxRetries = 10, retryInterval = 2000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            console.log(`テーマ取得 試行${attempt}回目`);
+            const { character: theme } = await startGame();
+            if (theme) {
+                console.log("テーマ取得成功:", theme);
+                return theme;
+            }
+        } catch (err) {
+            console.warn(`接続失敗 (${attempt}回目):`, err);
+        }
+        // 最終試行でなければ待機
+        if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, retryInterval));
+        }
+    }
+    return null; // 全部失敗
 }
+
 async function main() {
     startLoading(); // ローディング開始
 
@@ -42,7 +60,7 @@ async function main() {
         return;
     }
 
-    theme = await fetchTheme(); // ←ここでPromiseを「開封」！
+    theme = await fetchTheme(10, 2000); // ←ここでPromiseを「開封」！
     if (!theme) {
         alert("ゲーム開始に失敗しました。もう一度試してください。");
         window.location.href = "index.html";
