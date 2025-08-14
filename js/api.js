@@ -15,7 +15,7 @@ async function startGame() {
   }
 
   try {
-    const response = await callBackendAPI(0, themeLog, "", "", 1.2);
+    const response = await callBackendAPI(0, themeLog, "", "", 1.5);
 
     if (!response || !response.content) {
       throw new Error("AIの返答が不正です");
