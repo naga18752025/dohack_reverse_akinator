@@ -226,11 +226,13 @@ async function answerCheck(){
     answerFormClose();
     document.getElementById("buttons").style.display = "none";
 
-    if(theme === document.getElementById("answer-input").value.trim()){
-        correctAnswer();
-    }else{
-        wrongAnswer();
-    };
+    setTimeout(() => {
+        if(theme === document.getElementById("answer-input").value.trim()){
+            correctAnswer();
+        }else{
+            wrongAnswer();
+        };
+    }, 1500);
 
     try {
         await updateSession(sessionId, document.getElementById("answer-input").value, stopTimer());
