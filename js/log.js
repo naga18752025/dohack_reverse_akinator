@@ -85,6 +85,7 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
                 renderHistory(sessions);
                 lastFetchedAt = sessions[sessions.length - 1].created_at;
                 console.log("履歴取得成功");
+                stopLoading();
                 return; // 成功したら終了
             } else {
                 console.warn(`履歴なし (${attempt}回目)`);
