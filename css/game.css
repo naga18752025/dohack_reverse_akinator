@@ -498,14 +498,11 @@ button{
     justify-content: center;
     background: #7ec850;
     border-radius: 1vh;
-    cursor: pointer;
 }
 .mole {
-    width: min(11vw, 5.5vh);
-    height: min(11vw, 5.5vh);
-    background: brown;
-    border-radius: 50%;
-    transition: all 0.3s;
+    width: min(14vw, 7vh);
+    height: min(14vw, 7vh);
+    cursor: pointer;
 }
 
 #moles-game{
