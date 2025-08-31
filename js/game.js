@@ -89,7 +89,7 @@ function gameQuit(){
 function questionFormOpen(){
 
     // 質問の残り回数があるかを確認
-    if(questionNokori <0){
+    if(questionNokori < 0){
         return;
     }
     document.getElementById("buttons").style.display = "none";
