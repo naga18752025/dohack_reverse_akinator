@@ -91,7 +91,7 @@ async function main() {
         stopLoading(); // ローディング終了
         startTimer(); // タイマーを開始
         try {
-            const session = await createSession(theme);
+            const session = await createSession(rawTheme);
             sessionId = session.id;
         } catch {
         };
