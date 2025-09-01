@@ -2,6 +2,7 @@ const BACKEND_URL = "https://dohack-reverse-akinator.onrender.com";
 
 // AIが選んだキャラクターを記憶しておく変数
 let selectedCharacter = null;
+let selectedCharacter2 = null;
 
 /**
  * ゲーム開始：AIにキャラクターを選んでもらう
@@ -11,7 +12,7 @@ async function startGame() {
     const sessions = await getRecentSessionsWithQuestions(null, 20);
     themeLog = sessions.map(session => session.correct_answer);
   } catch {
-    themeLog = ["ねこ", "さくら"];
+    themeLog = ["猫", "桜"];
   }
 
   try {
@@ -26,6 +27,23 @@ async function startGame() {
     document.getElementById("check-answer-text2").textContent = selectedCharacter;
 
     return { success: true, character: selectedCharacter };
+  } catch (error) {
+    console.error("ゲーム開始でエラー:", error);
+    return { success: false, character: null };
+  }
+}
+
+async function ThemeCheck(){
+  try {
+    const response = await callBackendAPI(0.5, [], selectedCharacter, "", 0);
+
+    if (!response || !response.content) {
+      throw new Error("AIの返答が不正です");
+    }
+
+    selectedCharacter2 = response.content.trim();
+
+    return { success: true, character: selectedCharacter2 };
   } catch (error) {
     console.error("ゲーム開始でエラー:", error);
     return { success: false, character: null };

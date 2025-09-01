@@ -24,6 +24,7 @@ function back(){
     window.location.href = "index.html";
 }
 
+let rawTheme = null;
 let theme = null;
 let sessionId = null;
 let question = null;
@@ -49,6 +50,26 @@ async function fetchTheme(maxRetries = 10, retryInterval = 2000) {
     return null; // 全部失敗
 }
 
+async function themeToHiragana(maxRetries = 10, retryInterval = 2000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            console.log(`テーマ変換 試行${attempt}回目`);
+            const { character: theme } = await ThemeCheck(rawTheme);
+            if (theme) {
+                console.log("テーマ変換成功:", theme);
+                return theme;
+            }
+        } catch (err) {
+            console.warn(`接続失敗 (${attempt}回目):`, err);
+        }
+        // 最終試行でなければ待機
+        if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, retryInterval));
+        }
+    }
+    return null; // 全部失敗
+}
+
 async function main() {
     startLoading(); // ローディング開始
 
@@ -60,7 +81,9 @@ async function main() {
         return;
     }
 
-    theme = await fetchTheme(10, 2000); // ←ここでPromiseを「開封」！
+    rawTheme = await fetchTheme(10, 2000); // ←ここでPromiseを「開封」！
+    theme = await themeToHiragana(10, 2000);
+
     if (!theme) {
         alert("ゲーム開始に失敗しました。もう一度試してください。");
         window.location.href = "index.html";
