@@ -201,7 +201,9 @@ function responseAdd(){
     }
     const comments = document.getElementById("comments");
     comments.appendChild(newComment);
-    comments.scrollTop = document.getElementById("comments").scrollHeight; // コメント欄の一番下まで移動させる
+    setTimeout(() => {
+        comments.scrollTop = comments.scrollHeight;
+    }, 0);
 
     questionCheck();
 }
