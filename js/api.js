@@ -16,7 +16,7 @@ async function startGame() {
   }
 
   try {
-    const response = await callBackendAPI(0, themeLog, "", "", 1.5);
+    const response = await callBackendAPI(0, themeLog, "", "", "", 1.5);
 
     if (!response || !response.content) {
       throw new Error("AIの返答が不正です");
@@ -35,7 +35,7 @@ async function startGame() {
 
 async function ThemeCheck(){
   try {
-    const response = await callBackendAPI(0.5, [], selectedCharacter, "", 0);
+    const response = await callBackendAPI(0.5, [], selectedCharacter, "",  "", 0);
 
     if (!response || !response.content) {
       throw new Error("AIの返答が不正です");
@@ -60,7 +60,7 @@ async function askQuestion(question) {
   }
 
   try {
-    const response = await callBackendAPI(1, [], selectedCharacter, question, 0.0);
+    const response = await callBackendAPI(1, [], selectedCharacter, selectedCharacter2, question, 0.0);
     return { success: true, answer: response.content.trim() };
   } catch (error) {
     console.error("質問でエラー:", error);
@@ -73,17 +73,18 @@ async function askQuestion(question) {
  * @param {number} prompt - AIに送るメッセージ
  * @param {string[]} info1 - テーマログ
  * @param {string} info2 - 今回のテーマ
+ * @param {string} info3 - 今回のテーマ(ひらがな)
  * @param {string} Q - プレイヤーからの質問
  * @param {number} temperature
  */
-async function callBackendAPI(prompt, info1, info2, Q, temperature = 0.7) {
+async function callBackendAPI(prompt, info1, info2, info3, Q, temperature = 0.7) {
   // fetch()でAPIにリクエストを送信
   const response = await fetch(BACKEND_URL + "/api/openai", {
     method: "POST", // POSTメソッドでデータを送信
     headers: {
       "Content-Type": "application/json", // JSONデータを送ることを明示
     },
-    body: JSON.stringify({ prompt, info1, info2, Q, temperature }), // リクエストボディにJSON形式でデータを設定
+    body: JSON.stringify({ prompt, info1, info2, info3, Q, temperature }), // リクエストボディにJSON形式でデータを設定
   });
 
   // レスポンスが成功かチェック

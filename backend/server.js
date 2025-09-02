@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.post("/api/openai", async (req, res) => {
   try {
-    const { prompt, info1, info2, Q, temperature } = req.body;
+    const { prompt, info1, info2, info3, Q, temperature } = req.body;
     console.log(temperature);
 
     if(prompt === 0){
@@ -90,8 +90,9 @@ app.post("/api/openai", async (req, res) => {
       `;
     }else if(prompt === 1){
       const selectedCharacter = info2;
+      const selectedCharacter2 = info3;
       const question = Q;
-      const count = [...info2.normalize('NFC')].length;
+      const count = [...info3.normalize('NFC')].length;
       realPrompt = `
       あなたは「${selectedCharacter}」についての質問に答える役割です。
       「${selectedCharacter}」は平仮名で${count}文字の日本語の名詞です。
