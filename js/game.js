@@ -168,7 +168,7 @@ function questionAdd(){
     responseAdd();
 }
 
-let questionNokori = 20; // 残り質問可能回数の初期値
+let questionNokori = 30; // 残り質問可能回数の初期値
 
 // 質問回数を管理
 function questionCounter(){
