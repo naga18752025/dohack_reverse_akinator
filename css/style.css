@@ -17,13 +17,13 @@ body {
 
 #title{
     margin: 3vh 0;
-    width: 80%;
+    width: min(80%, 60vh);
     max-width: 400px;
     filter: drop-shadow(0.2vh 0.2vh 0.5vh rgba(255, 255, 255, 0.5));;
 }
 
 #owl{
-    width: 70%;
+    width: min(70%, 50vh);
     max-width: 400px;
     border:double 1vh black;
     background-color: #4e64bc;
