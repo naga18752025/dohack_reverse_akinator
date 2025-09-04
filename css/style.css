@@ -27,8 +27,8 @@ body {
     width: min(70%, 50vh);
     max-width: 400px;
     border:double 1vh black;
-    background-color: #73603c;
-    background-image: radial-gradient(circle at center, #d0d1d4 0%, transparent 100%);
+    background-color: #cab195;
+    background-image: radial-gradient(circle at center, #fff 0%, transparent 70%);
     box-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
 
 }
