@@ -6,6 +6,7 @@
 }
 
 body {
+    background-color: black;
     background: 
         radial-gradient(circle at center, #3230b6 0%, transparent 70%),
         linear-gradient(to right, #0b0033 0%, #3230b6 50%, #0b0033 100%);
