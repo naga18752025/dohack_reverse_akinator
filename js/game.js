@@ -19,11 +19,6 @@ function stopLoading() {
     document.getElementById("mole-game-container").style.display = "none";
 }
 
-function back(){
-    document.getElementById("loading3").style.display = "flex";
-    window.location.href = "index.html";
-}
-
 let rawTheme = null;
 let theme = null;
 let sessionId = null;
