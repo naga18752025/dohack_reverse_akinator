@@ -6,8 +6,9 @@
 }
 
 body {
-    background-color: #0b0033;
-    background-image: radial-gradient(circle at center, #2E4ABA 0%, transparent 100%);
+    background: 
+        radial-gradient(circle at center, #2E4ABA 0%, transparent 70%),
+        linear-gradient(to right, #0b0033 0%, #2E4ABA 50%, #0b0033 100%);
     width: 100%;
     height: 100%;
     display: flex;
