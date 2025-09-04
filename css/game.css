@@ -188,6 +188,7 @@ body {
     border-radius: 1vh;
     box-shadow: 0 1vh 1vh rgba(0, 0, 0, 0.5);
     background-color: white;
+    margin-bottom: 10vh;
 }
 
 #question-form{
@@ -231,6 +232,7 @@ body {
     border: none;
     border-radius: 0.5vh;
     background-color: aliceblue;
+    margin-bottom: 10vh;
 }
 
 .loading span {
@@ -315,6 +317,7 @@ body {
     border: none;
     border-radius: 0.5vh;
     background-color: aliceblue;
+    margin-bottom: 10vh;
 }
 
 #check-answer-box{
@@ -353,6 +356,7 @@ body {
     padding: 5vh 10vw;
     border: none;
     border-radius: 1vh;
+    margin-bottom: 10vh;
 }
 
 #final-answer{
