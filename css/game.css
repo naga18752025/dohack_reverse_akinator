@@ -6,9 +6,7 @@
 }
 
 body {
-    background: 
-        radial-gradient(circle at center, #3230b6 0%, transparent 70%),
-        linear-gradient(to right, #0b0033 0%, #3230b6 50%, #0b0033 100%);
+    background-color: #2E4ABA;
     width: 100%;
     height: 100%;
     display: flex;
@@ -22,7 +20,6 @@ body {
     display: flex;
     margin-top: 1vh;
     justify-content: center;
-    background-color: #0b0033;
 }
 
 #logo {
