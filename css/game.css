@@ -69,15 +69,15 @@ body {
     background-color: #dadada;
     text-align: left;
     padding-left: 1vw;
-    border: min(0.4vh, 0.7vw) solid black;
+    border: none;
     border-radius: 1vh;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     box-shadow: 
-        0 0.25vh 0.5vh rgba(0,0,0,0.9),     /* 外側の影 */
-        inset 0 0.125vh 0.25vh rgba(255,255,255,0.9); /* 内側の光 */
+        0 0.5vh 0.5vh rgba(0,0,0,0.9),     /* 外側の影 */
+        inset 0 0.25vh 0.25vh rgba(255,255,255,0.9); /* 内側の光 */
 }
 
 #main-owl{
