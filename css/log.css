@@ -41,6 +41,9 @@ body {
     background-color: #253c97;
     border: none;
     border-radius: 1vh;
+    box-shadow: 
+        0 0.25vh 0.5vh rgba(0,0,0,0.7),     /* 外側の影 */
+        inset 0 0.125vh 0.25vh rgba(255,255,255,0.7); /* 内側の光 */
 }
 
 #log-title {
