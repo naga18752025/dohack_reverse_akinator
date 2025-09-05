@@ -55,7 +55,7 @@ body {
 #quit{
     font-size: min(1.5vh, 3vw);
     align-self: flex-end;
-    background-color: rgb(209, 209, 209);
+    background-color: #ffa268;
     border: none;
     border-radius: 0.5vh;
     width: 20vw;
