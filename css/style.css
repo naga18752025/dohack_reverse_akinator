@@ -86,18 +86,17 @@ body {
 }
 
 #start-button{
-    font-family: 'Raleway', sans-serif;
     font-size: min(3.5vh, 6vw);
     margin-top: 5vh;
-    background-color: rgb(253, 255, 225);
+    background-color: rgb(255, 254, 221);
     border: none;
     border-radius: 1vh;
-    padding: 0.5vh 5vw;
-    box-shadow: 0 1vh 1vh black;
+    padding: 0.5vh min(10vw, 10vh);
+
+    box-shadow: 0 0.5vh 1vh black;
 }
 
 #log-button{
-    font-family: 'Raleway', sans-serif;
     font-size: min(2.5vh, 4vw);
     margin-top: 3vh;
     margin-bottom: 10vh;
@@ -105,7 +104,7 @@ body {
     border: none;
     border-radius: 1vh;
     padding: 0.5vh 3vw;
-    box-shadow: 0 1vh 1vh black;
+    box-shadow: 0 0.5vh 1vh black;
 }
 
 #loading3{
