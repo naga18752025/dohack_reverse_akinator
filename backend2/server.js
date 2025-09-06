@@ -87,6 +87,15 @@ app.get("/get-recent-sessions", async (req, res) => {
   res.json(data);
 });
 
+// 人気のお題を取得
+app.get("/get-popular-answers", async (req, res) => {
+  const { data, error } = await supabase.rpc("get_popular_answers");
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  res.json(data);
+});
+
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
   console.log(`Backend running on port ${port}`);

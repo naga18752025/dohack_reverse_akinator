@@ -1,4 +1,4 @@
-const API_URL = "https://dohack-reverse-akinator2.onrender.com"; 
+const API_URL = "https://dohack-reverse-akinator2.onrender.com";
 
 // 関数名・返り値はそのままにして中身をAPI呼び出しに置き換え
 async function createSession(correctAnswer) {
@@ -35,6 +35,16 @@ async function getRecentSessionsWithQuestions(after = null, size = 15) {
     ? `${API_URL}/get-recent-sessions?after=${encodeURIComponent(after)}&size=${size}`
     : `${API_URL}/get-recent-sessions?size=${size}`;
   
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+async function getPopularAnswers(limit = null) {
+  const url = limit 
+    ? `${API_URL}/get-popular-answers?limit=${limit}`
+    : `${API_URL}/get-popular-answers`;
+
   const res = await fetch(url);
   if (!res.ok) return null;
   return await res.json();

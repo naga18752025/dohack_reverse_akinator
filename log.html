@@ -17,8 +17,15 @@
 
     <div id="log-container">
         <div id="log-title">みんなの履歴</div>
+        <div id="selection">
+            <div onclick="checkLog()" class="active-log">最近のプレイ順</div>
+            <div onclick="checkLog2()">頻出のお題順</div>
+        </div>
         <div id="log-list">
             <!-- ログがここに表示されます -->
+        </div>
+        <div id="log-list2" style="display: none;">
+            <!-- 頻出のお題がここに表示されます -->
         </div>
 
         <button id="back-button" onclick="back()">戻る</button>

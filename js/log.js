@@ -26,7 +26,7 @@ function back(){
 
 let log = [];
 let loadCount = 1;
-const pageSize = 5;
+const pageSize = 10;
 let lastFetchedAt = null;
 
 function renderHistory(sessions) {
@@ -42,7 +42,6 @@ function renderHistory(sessions) {
             <p>最終解答: ${session.final_guess}</p>
             <p>正解: ${session.correct_answer}</p>
             <p>プレイ時間: ${session.play_time}</p>
-            <p>${new Date(session.created_at).toLocaleString()}</p>
         `;
 
         const questionButton = document.createElement("button");
@@ -71,6 +70,28 @@ function renderHistory(sessions) {
     });
 }
 
+function renderHistory2(sessions) {
+    const container2 = document.getElementById("log-list2");
+
+    let ranking = 1;
+    sessions.forEach((session) => {
+        const card = document.createElement("div");
+        card.classList.add("session-card");
+
+        const sessionInfo = document.createElement("div");
+        sessionInfo.classList.add("session-info");
+        sessionInfo.innerHTML = `
+            <p>${ranking}位: ${session.correct_answer}</p>
+            <p>出題回数: ${session.answer_count}</p>
+        `;
+        ranking++;
+
+        card.appendChild(sessionInfo);
+        container2.appendChild(card);
+        container2.appendChild(document.createElement("hr"));
+    });
+}
+
 // 初回読み込み
 async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
     startLoading();
@@ -79,11 +100,13 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
         try {
             console.log(`履歴取得 試行${attempt}回目`);
             const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+            const sessions2 = await getPopularAnswers(null);
 
-            if (sessions && sessions.length > 0) {
+            if (sessions && sessions.length > 0 && sessions2 && sessions2.length > 0) {
                 log = log.concat(sessions);
                 renderHistory(sessions);
                 lastFetchedAt = sessions[sessions.length - 1].created_at;
+                renderHistory2(sessions2);
                 console.log("履歴取得成功");
                 stopLoading();
                 return; // 成功したら終了
@@ -158,6 +181,23 @@ function modalOpen(targetId) {
 
 function modalClose() {
     modal.classList.remove('is-active');
+}
+
+function checkLog(){
+    document.getElementById("log-list").style.display = "flex";
+    document.getElementById("log-list2").style.display = "none";
+    const selection = document.getElementById("selection");
+    selection.children[0].classList.add("active-log");
+    selection.children[1].classList.remove("active-log"); 
+}
+
+function checkLog2(){
+    document.getElementById("log-list").style.display = "none";
+
+    document.getElementById("log-list2").style.display = "flex";
+    const selection = document.getElementById("selection");
+    selection.children[0].classList.remove("active-log");
+    selection.children[1].classList.add("active-log"); 
 }
 
 // 初回実行

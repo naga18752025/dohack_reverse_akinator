@@ -52,10 +52,31 @@ body {
     color: white;
 }
 
-#log-list {
+#selection {
     color: black;
     width: 100%;
-    height: 65vh;
+    height: auto;
+    display: flex;
+    justify-content: space-around;
+    font-size: min(1.5vh, 2.0vw);
+    background-color: rgb(147, 147, 147);
+}
+
+#selection div{
+    padding: 1vh 0;
+    width: 50%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.active-log{
+    background-color: #f1f1f1;
+}
+
+#log-list, #log-list2 {
+    color: black;
+    width: 100%;
+    height: 60vh;
     background-color: #f1f1f1;
     display: flex;
     flex-direction: column;
