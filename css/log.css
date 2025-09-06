@@ -111,7 +111,7 @@ p{
 
 .question-button {
     font-size: min(1.5vh, 2vw);
-    background-color: rgb(238, 255, 0);
+    background-color: rgb(248, 243, 0);
     border: none;
     border-radius: 0.5vh;
     padding: 0.5vh 3vw;
@@ -126,6 +126,45 @@ p{
     border-radius: 1vh;
     padding: 0.5vh 3vw;
     margin: 1vh 0 3vh 0;
+}
+
+/* 検索ボックス全体 */
+#search-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1vw;
+    margin: 1vh 0;
+}
+
+/* 入力欄 */
+#search-input {
+    width: 60%;
+    padding: 0.7vh 1vw;
+    font-size: max(min(2.0vh, 3.0vw), 16px);
+    border: 0.125vh solid #ccc;
+    border-radius: 0.5vh;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* 入力時の枠色 */
+#search-input:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 0.5vh rgba(76, 175, 80, 0.5);
+}
+
+/* 検索ボタン */
+#search-box button {
+    width: 20%;
+    padding: 0.7vh 1vw;
+    font-size: max(min(2.0vh, 3.0vw), 16px);
+    border: none;
+    border-radius: 1vh;
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 #back-button {

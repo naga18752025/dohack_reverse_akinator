@@ -45,7 +45,7 @@ function renderHistory(sessions) {
         `;
 
         const questionButton = document.createElement("button");
-        questionButton.textContent = "質問一覧";
+        questionButton.textContent = "質問を見る";
         questionButton.onclick = () => modalOpen(session.id);
         questionButton.classList.add("question-button");
 
@@ -198,6 +198,28 @@ function checkLog2(){
     const selection = document.getElementById("selection");
     selection.children[0].classList.remove("active-log");
     selection.children[1].classList.add("active-log"); 
+}
+
+function searchAnswer() {
+    const query = document.getElementById("search-input").value.toLowerCase();
+    const cards = document.querySelectorAll("#log-list2 .session-card");
+    let firstMatch = null;
+
+    cards.forEach(card => {
+        const answer = card.querySelector(".session-info p").textContent.toLowerCase();
+        if (answer.includes(query) && query !== "") {
+            card.style.backgroundColor = "#ffff99";
+            if (!firstMatch) firstMatch = card; 
+        } else {
+            card.style.backgroundColor = "";
+        }
+    });
+
+    if (firstMatch) {
+        firstMatch.scrollIntoView({ behavior: "smooth", block: "center" });
+    }else{
+        alert("該当するお題は見つかりませんでした。");
+    }
 }
 
 // 初回実行

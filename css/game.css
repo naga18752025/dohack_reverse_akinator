@@ -217,6 +217,11 @@ body {
     box-shadow: 0 1vh 1vh rgba(0, 0, 0, 0.5);
 }
 
+#question-input:focus {
+    border-color: rgb(221, 223, 108);
+    box-shadow: 0 1vh 1vh rgba(29, 35, 0, 0.5);
+}
+
 #question-confirmed{
     margin-top: 4vh;
     font-size: 2vh;
@@ -300,6 +305,11 @@ body {
     border: 0.25vh solid black;
     border-radius: 1vh;
     box-shadow: 0 1vh 1vh rgba(0, 0, 0, 0.5);
+}
+
+#answer-input:focus {
+    border-color: rgb(223, 71, 71);
+    box-shadow: 0 1vh 1vh rgba(29, 0, 0, 0.5);
 }
 
 #answer-confirmed{
