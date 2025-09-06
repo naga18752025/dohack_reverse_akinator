@@ -202,13 +202,14 @@ function checkLog2(){
 }
 
 function searchAnswer() {
-    const query = document.getElementById("search-input").value.toLowerCase();
+    const query = document.getElementById("search-input").value.trim();
     const cards = document.querySelectorAll("#log-list2 .session-card");
     let firstMatch = null;
 
     cards.forEach(card => {
-        const answer = card.querySelector(".session-info p").textContent.toLowerCase();
-        if (answer.includes(query) && query !== "") {
+        const fullText = card.querySelector(".session-info p").textContent.trim();
+        const answer = fullText.split(":")[1].trim();
+        if ((answer === query) && (query !== "")) {
             card.style.backgroundColor = "#ffff99";
             if (!firstMatch) firstMatch = card; 
         } else {
