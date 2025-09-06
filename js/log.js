@@ -41,6 +41,7 @@ function renderHistory(sessions) {
         sessionInfo.innerHTML = `
             <p>最終解答: ${session.final_guess}</p>
             <p>正解: ${session.correct_answer}</p>
+            <p>質問回数: ${session.questions.length}回</p>
             <p>プレイ時間: ${session.play_time}</p>
         `;
 
