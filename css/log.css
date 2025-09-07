@@ -84,6 +84,27 @@ body {
     overflow-y: auto;
 }
 
+#log-filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1vw;
+    margin: 1vh 0;
+}
+
+#log-filter div{
+    padding: 0.5vh 2vw;
+    border: #cdcdcd solid 0.125vh;
+    border-radius: 2vh;
+    background-color: #ffffff;
+    cursor: pointer;
+    font-size: min(2.0vh, 3.0vw);
+}
+
+#log-filter div.active-filter{
+    background-color: #acacac;
+}
+
 .session-card {
     width: 70vw;
     padding: 1vh;

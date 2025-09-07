@@ -154,6 +154,9 @@ async function loadMoreHistory() {
         alert("履歴の読み込み中にエラーが発生しました。");
     } finally {
         stopLoading();
+        if(filterOn) {
+            logFilterOn();
+        }
     }
 }
 
@@ -207,7 +210,7 @@ function searchAnswer() {
     let firstMatch = null;
 
     cards.forEach(card => {
-        const fullText = card.querySelector(".session-info p").textContent.trim();
+        const fullText = card.querySelector(".session-info").children[0].textContent.trim();
         const answer = fullText.split(":")[1].trim();
         if ((answer === query) && (query !== "")) {
             card.style.backgroundColor = "#ffff99";
@@ -222,6 +225,38 @@ function searchAnswer() {
     }else{
         alert("該当するお題は見つかりませんでした。");
     }
+}
+
+let filterOn = false;
+
+function logFilterOn() {
+    filterOn = true;
+    document.getElementById("log-filter").children[0].classList.remove("active-filter");
+    document.getElementById("log-filter").children[1].classList.add("active-filter");
+    const cards = document.querySelectorAll("#log-list .session-card");
+
+    cards.forEach(card => {
+        const fullText = card.querySelector(".session-info").children[0].textContent.trim();
+        const answer = fullText.split(":")[1].trim();
+        if ((answer === "----")) {
+            card.style.backgroundColor = "#353535ff";
+            card.querySelector(".question-button").style.backgroundColor = "#212121ff";
+            card.querySelector(".question-button").disabled = true;
+        }
+    });
+}
+
+function logFilterOff() {
+    filterOn = false;
+    document.getElementById("log-filter").children[0].classList.add("active-filter");
+    document.getElementById("log-filter").children[1].classList.remove("active-filter");
+    const cards = document.querySelectorAll("#log-list .session-card");
+
+    cards.forEach(card => {
+        card.style.backgroundColor = "white";
+        card.querySelector(".question-button").style.backgroundColor = "rgb(248, 243, 0)";
+        card.querySelector(".question-button").disabled = false;
+    });
 }
 
 // 初回実行

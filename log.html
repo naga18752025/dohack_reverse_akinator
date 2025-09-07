@@ -22,6 +22,10 @@
             <div onclick="checkLog2()">頻出のお題順</div>
         </div>
         <div id="log-list">
+            <div id="log-filter">
+                <div onclick="logFilterOff()" class="active-filter">全て</div>
+                <div onclick="logFilterOn()">最終解答あり</div>
+            </div>
             <!-- ログがここに表示されます -->
         </div>
         <div id="log-list2" style="display: none;">
