@@ -92,6 +92,7 @@ async function main() {
         };
     }
 }
+
 main();
 
 // ゲームの中断
@@ -216,6 +217,7 @@ async function questionCheck(){
     }
     document.getElementById("buttons").style.display = "flex";
     document.getElementById("question-input").value = ""; 
+    addComment(30 - questionNokori - 1); // 質問回数に応じたコメントを追加
 }
 
 // 解答の決定工程
@@ -325,5 +327,3 @@ function finishGame(){
     document.getElementById("loading3").style.display = "flex";
     window.location.href = "index.html";
 }
-
-
