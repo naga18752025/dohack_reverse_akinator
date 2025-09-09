@@ -96,6 +96,247 @@ app.get("/get-popular-answers", async (req, res) => {
   res.json(data);
 });
 
+import bcrypt from "bcrypt";
+
+// アカウント作成
+app.post("/create-account", async (req, res) => {
+  const { user_name, password } = req.body;
+
+  // 入力チェック
+  if (!user_name || !password) {
+    return res.status(400).json({ error: "user_name と password は必須です" });
+  }
+
+  // 既存ユーザー確認
+  const { data: existingUser, error: selectError } = await supabase
+    .from("account")
+    .select("id")
+    .eq("user_name", user_name)
+    .maybeSingle();
+
+  if (selectError) {
+    return res.status(500).json({ error: selectError.message });
+  }
+
+  if (existingUser) {
+    return res.status(400).json({ error: "使用済" });
+  }
+
+  try {
+    // パスワードをハッシュ化（ソルトラウンドは10）
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 新規ユーザー追加
+    const { data: user, error } = await supabase
+      .from("account")
+      .insert([{ user_name, password: hashedPassword }])
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ id: user.id, user_name: user.user_name, play_count: user.play_count, correct_count: user.correct_count });
+
+  } catch (err) {
+    res.status(500).json({ error: "ハッシュ化エラー: " + err.message });
+  }
+});
+
+// ログイン
+app.post("/login", async (req, res) => {
+  const { user_name, password } = req.body;
+
+  // 入力チェック
+  if (!user_name || !password) {
+    return res.status(400).json({ error: "user_name と password は必須です" });
+  }
+
+  // ユーザー取得
+  const { data: user, error: selectError } = await supabase
+    .from("account")
+    .select("id, user_name, password, play_count, correct_count") // ← ハッシュ済みパスワードも取得
+    .eq("user_name", user_name)
+    .maybeSingle();
+
+  if (selectError) {
+    return res.status(500).json({ error: selectError.message });
+  }
+
+  if (!user) {
+    return res.status(400).json({ error: "不正" });
+  }
+
+  try {
+    // 入力された password とハッシュを照合
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(401).json({ error: "不正" });
+    }
+
+    // 認証成功
+    res.json({ id: user.id, user_name: user.user_name, play_count: user.play_count, correct_count: user.correct_count });
+
+  } catch (err) {
+    res.status(500).json({ error: "照合エラー: " + err.message });
+  }
+});
+
+// プレイ回数を1増やす
+app.post("/increment-play-count", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId は必須です" });
+
+  try {
+    const { data: user, error: fetchError } = await supabase
+      .from("account")
+      .select("play_count")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (fetchError) return res.status(500).json({ error: fetchError.message });
+    if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
+
+    const newPlayCount = (parseInt(user.play_count) || 0) + 1;
+
+    const { data, error: updateError } = await supabase
+      .from("account")
+      .update({ play_count: newPlayCount })
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (updateError) return res.status(500).json({ error: updateError.message });
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "更新エラー: " + err.message });
+  }
+});
+
+// 正解回数を1増やす
+app.post("/increment-correct-count", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId は必須です" });
+
+  try {
+    const { data: user, error: fetchError } = await supabase
+      .from("account")
+      .select("correct_count")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (fetchError) return res.status(500).json({ error: fetchError.message });
+    if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
+
+    const newCorrectCount = (parseInt(user.correct_count) || 0) + 1;
+
+    const { data, error: updateError } = await supabase
+      .from("account")
+      .update({ correct_count: newCorrectCount })
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (updateError) return res.status(500).json({ error: updateError.message });
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "更新エラー: " + err.message });
+  }
+});
+
+// ユーザー名更新
+app.post("/update-name", async (req, res) => {
+  const { userId, new_user_name } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId は必須です" });
+  if (!new_user_name) return res.status(400).json({ error: "new_user_name は必須です" });
+
+  // 既存ユーザー確認
+  const { data: existingUser, error: selectError } = await supabase
+    .from("account")
+    .select("id")
+    .eq("user_name", new_user_name)
+    .maybeSingle();
+
+  if (selectError) {
+    return res.status(500).json({ error: selectError.message });
+  }
+
+  if (existingUser) {
+    return res.status(400).json({ error: "使用済" });
+  }
+
+  try {
+    const { data, error: updateError } = await supabase
+      .from("account")
+      .update({ user_name: new_user_name })
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (updateError) return res.status(500).json({ error: updateError.message });
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "更新エラー: " + err.message });
+  }
+});
+
+// パスワード更新
+app.post("/update-password", async (req, res) => {
+  const { userId, new_password } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId は必須です" });
+  if (!new_password) return res.status(400).json({ error: "new_password は必須です" });
+
+  const hashedPassword = await bcrypt.hash(new_password, 10);
+  try {
+    const { data, error: updateError } = await supabase
+      .from("account")
+      .update({ password: hashedPassword })
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (updateError) return res.status(500).json({ error: updateError.message });
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "更新エラー: " + err.message });
+  }
+});
+
+app.post("/delete-account", async (req, res) => {
+  const { id } = req.body;
+
+  // 確認用ログ
+  console.log("受け取った id:", id);
+  console.log("req.body 全体:", req.body);
+
+  if (!id) return res.status(400).json({ error: "id が必要です" });
+
+  const { data, error } = await supabase
+    .from("account")
+    .delete()
+    .eq("id", id)
+    .select(); // 削除した行を返す
+
+  if (error) {
+    console.error("削除エラー:", error.message);
+    return res.status(500).json({ error: "削除エラー: " + error.message });
+  }
+
+  if (!data.length) {
+    console.warn("該当アカウントが存在しません:", id);
+    return res.status(404).json({ error: "該当アカウントが存在しません" });
+  }
+
+  console.log("削除成功:", data);
+  res.json({ success: true });
+});
+
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
   console.log(`Backend running on port ${port}`);

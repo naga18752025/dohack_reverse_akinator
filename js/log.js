@@ -261,3 +261,11 @@ function logFilterOff() {
 
 // 初回実行
 loadInitialHistory();
+
+function loginCheck(){
+    if(localStorage.getItem("account")){
+        document.getElementById("account").textContent = localStorage.getItem("account");
+    }
+}
+
+loginCheck();

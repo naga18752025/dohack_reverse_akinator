@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+    <title>逆アキネーター|アカウント</title>
+    <link rel="stylesheet" href="css/account.css" />
+</head>
+<body>
+    <div id="top-logo">
+        <img src="images/title.png" alt="逆アキネーター" id="logo" draggable="false" oncontextmenu="return false;" ontouchstart="return false;">
+    </div>
+
+    <div id="container">
+        <div id="title">アカウント管理</div>
+        <div id="no-account">
+            <div id="selection">
+                <div onclick="toSignIn()" class="active">ログイン</div>
+                <div onclick="toSignUp()">新規登録</div>
+            </div>
+            <div id="explanation">ユーザー名とパスワードを入力してください</div>
+            <label>ユーザー名<input type="text" id="username-input" placeholder="例：田中太郎"></label>
+            <label>パスワード<input type="password" id="password-input" placeholder="例：password123"></label>
+            <button id="signin-button" onclick="checkSignIn()">ログイン</button>
+            <button id="signup-button" onclick="checkSignUp()" style="display: none;">新規登録</button>
+        </div>
+        <div id="has-account" style="display: none;">
+            <div id="selection2">
+                <div onclick="toInfo()" class="active">基本情報</div>
+                <div onclick="toSetting()">その他設定</div>
+            </div>
+            <div id="user-name-display"><span id="user-name">田中太郎</span> 様</div>
+            <div id="user-status">
+                <div id="level">Lv.1 見習い質問者</div>
+                <hr>
+                <div>プレイ回数：<span id="play-count">0</span>回</div>
+                <div>正解数:<span id="correct-count">0</span>回</div>
+                <div>正解率：<span id="correct-rate">0</span>%</div>
+            </div>
+            <div id="user-setting" style="display: none;">
+                <div id="change-name">ユーザー名を変更する</div>
+                <input type="text" id="new-username-input" placeholder="新しいユーザー名を入力">
+                <button id="change-name-button" onclick="changeName()">変更</button>
+                <div id="change-password">パスワードを変更する</div>
+                <input type="password" id="new-password-input" placeholder="新しいパスワードを入力">
+                <button id="change-password-button" onclick="changePassword()">変更</button>
+                <div id="delete-account">アカウントを削除する</div>
+                <button id="delete-account-button" onclick="deleteAccountOrNot()">削除</button>
+            </div>
+            <button id="signout-button" onclick="signOut()">ログアウト</button>
+        </div>
+        <button id="top-back" onclick="topBack()">トップに戻る</button>
+    </div>
+    <div id="loading3" style="display: none;">
+        <p id="long-loading" style="display: none;">少し時間がかかる場合があります<br>もう少々お待ちください</p>
+        <div class="square-move-2"></div>
+        <div id="mole-game-container" style="display: none;">
+            <p id="mole-game-title" style="color:white;">モグラ叩き</p>
+            <div id="moles-game">
+                <!-- モグラのマス -->
+                <div class="mole-cell"></div>
+                <div class="mole-cell"></div>
+                <div class="mole-cell"></div>
+                <div class="mole-cell"></div>
+                <div class="mole-cell"></div>
+                <div class="mole-cell"></div>
+            </div>
+            <p id="score-display">スコア: 0</p>
+        </div>
+    </div>
+    <script src="js/mole.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/account.js"></script>
+</body>
+</html>

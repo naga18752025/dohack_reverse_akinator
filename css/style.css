@@ -16,6 +16,21 @@ body {
     justify-content: center;
 }
 
+#account {
+    position: absolute;
+    top: 1vh;
+    right: 2vw;
+    color: white;
+    font-size: min(1.5vh, 2.0vw);
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.5vh 1vw;
+    border-radius: none;
+    box-shadow: 
+        0 0.25vh 0.5vh rgba(0,0,0,0.7),     /* 外側の影 */
+        inset 0 0.125vh 0.25vh rgba(255,255,255,0.7); /* 内側の光 */
+    cursor: pointer;
+}
+
 #title{
     margin: 3vh 0;
     width: min(80%, 60vh);
@@ -105,6 +120,16 @@ body {
     border-radius: 1vh;
     padding: 0.5vh 3vw;
     box-shadow: 0 0.5vh 1vh black;
+}
+
+#account-button{
+    font-size: min(2.0vh, 3.0vw);
+    background-color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 1vh;
+    padding: 0.5vh 3vw;
+    box-shadow: 0 0.5vh 1vh black;
+    margin-bottom: 10vh;
 }
 
 #loading3{

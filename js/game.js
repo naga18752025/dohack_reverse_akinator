@@ -88,6 +88,10 @@ async function main() {
         try {
             const session = await createSession(rawTheme);
             sessionId = session.id;
+            if(localStorage.getItem("id")){
+                const result = await updatePlayCounts(localStorage.getItem("id"));
+                localStorage.setItem("playCount", result.play_count);
+            }
         } catch {
         };
     }
@@ -281,7 +285,15 @@ async function answerCheck(){
 }
 
 // 解答が正しかった場合
-function correctAnswer(){
+async function correctAnswer(){
+
+    try {
+        if(localStorage.getItem("id")){
+            const result = await updateCorrectCounts(localStorage.getItem("id"));
+            localStorage.setItem("correctCount", result.correct_count);
+        }
+    } catch {
+    }
 
     // 解答確認中の画面を非表示にする
     document.getElementById("answer-checking").style.display = "none";
@@ -327,3 +339,11 @@ function finishGame(){
     document.getElementById("loading3").style.display = "flex";
     window.location.href = "index.html";
 }
+
+function loginCheck(){
+    if(localStorage.getItem("account")){
+        document.getElementById("account").textContent = localStorage.getItem("account");
+    }
+}
+
+loginCheck();

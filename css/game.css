@@ -15,6 +15,21 @@ body {
     justify-content: center;
 }
 
+#account {
+    position: absolute;
+    top: 1vh;
+    right: 2vw;
+    color: white;
+    font-size: min(1.5vh, 2.0vw);
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.5vh 1vw;
+    border-radius: none;
+    box-shadow: 
+        0 0.25vh 0.5vh rgba(0,0,0,0.7),     /* 外側の影 */
+        inset 0 0.125vh 0.25vh rgba(255,255,255,0.7); /* 内側の光 */
+    cursor: pointer;
+}
+
 #top-logo {
     width: 100%;
     display: flex;
