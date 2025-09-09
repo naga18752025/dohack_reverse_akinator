@@ -278,3 +278,7 @@ label{
         transform: translate(0%, 0%);
     }
 }
+
+button{
+    color: black;
+}
