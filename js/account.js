@@ -80,17 +80,17 @@ function updateLevel(){
     }else if(parseInt(localStorage.getItem("correctCount")) <= 9){
         document.getElementById("level").textContent = "Lv.3 質問の旅人";
     }else if(parseInt(localStorage.getItem("correctCount")) <= 19){
-        document.getElementById("level").textContent = "Lv.4 熟考の探求者";
+        document.getElementById("level").textContent = "Lv.4 ワードハンター";
     }else if(parseInt(localStorage.getItem("correctCount")) <= 34){
-        document.getElementById("level").textContent = "Lv.5 推理の達人";
+        document.getElementById("level").textContent = "Lv.5 語彙の探偵";
     }else if(parseInt(localStorage.getItem("correctCount")) <= 49){
-        document.getElementById("level").textContent = "Lv.6 言葉の探偵";
+        document.getElementById("level").textContent = "Lv.6 言葉のスナイパー";
     }else if(parseInt(localStorage.getItem("correctCount")) <= 74){
-        document.getElementById("level").textContent = "Lv.7 質問の達人";
+        document.getElementById("level").textContent = "Lv.7 推理の達人";
     }else if(parseInt(localStorage.getItem("correctCount")) <= 99){
-        document.getElementById("level").textContent = "Lv.8 真理を見抜く者";
+        document.getElementById("level").textContent = "Lv.8 究極の質問者";
     }else if(parseInt(localStorage.getItem("correctCount")) <= 149){
-        document.getElementById("level").textContent = "Lv.9 真理の探究王";
+        document.getElementById("level").textContent = "Lv.9 言葉の探究王";
     }else if(parseInt(localStorage.getItem("correctCount")) >= 150){
         document.getElementById("level").textContent = "Lv.10 逆アキネーター超越者";
     }
