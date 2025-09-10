@@ -74,7 +74,8 @@ app.get("/get-recent-sessions", async (req, res) => {
         created_at
       )
     `)
-    .order("created_at", { ascending: false }) // 新しい順
+    .order("created_at", { ascending: false }) // sessions の順
+    .order("created_at", { foreignTable: "questions", ascending: true }); // questions の順
 
   if (after) {
     // afterより**古い**（小さい）created_atを取得
