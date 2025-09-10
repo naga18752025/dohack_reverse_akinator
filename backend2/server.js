@@ -10,7 +10,7 @@ const corsOptions = {
   methods: ["GET", "POST"],
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -115,7 +115,7 @@ app.post("/create-account", async (req, res) => {
     .maybeSingle();
 
   if (selectError) {
-    return res.status(500).json({ error: selectError.message });
+    return res.status(500).json({ error: "登録エラー" });
   }
 
   if (existingUser) {
@@ -134,13 +134,13 @@ app.post("/create-account", async (req, res) => {
       .single();
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: "登録エラー" });
     }
 
     res.json({ id: user.id, user_name: user.user_name, play_count: user.play_count, correct_count: user.correct_count });
 
   } catch (err) {
-    res.status(500).json({ error: "ハッシュ化エラー: " + err.message });
+    res.status(500).json({ error: "登録エラー" });
   }
 });
 
@@ -180,7 +180,7 @@ app.post("/login", async (req, res) => {
     res.json({ id: user.id, user_name: user.user_name, play_count: user.play_count, correct_count: user.correct_count });
 
   } catch (err) {
-    res.status(500).json({ error: "照合エラー: " + err.message });
+    res.status(500).json({ error: "認証エラー" });
   }
 });
 
@@ -197,7 +197,7 @@ app.post("/increment-play-count", async (req, res) => {
       .maybeSingle();
 
     if (fetchError) return res.status(500).json({ error: fetchError.message });
-    if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
+    if (!user) return res.status(404).json({ error: "更新エラー" });
 
     const newPlayCount = (parseInt(user.play_count) || 0) + 1;
 
@@ -208,11 +208,11 @@ app.post("/increment-play-count", async (req, res) => {
       .select()
       .single();
 
-    if (updateError) return res.status(500).json({ error: updateError.message });
+    if (updateError) return res.status(500).json({ error: "更新エラー"});
     res.json(data);
 
   } catch (err) {
-    res.status(500).json({ error: "更新エラー: " + err.message });
+    res.status(500).json({ error: "更新エラー " });
   }
 });
 
@@ -229,7 +229,7 @@ app.post("/increment-correct-count", async (req, res) => {
       .maybeSingle();
 
     if (fetchError) return res.status(500).json({ error: fetchError.message });
-    if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
+    if (!user) return res.status(404).json({ error: "更新エラー" });
 
     const newCorrectCount = (parseInt(user.correct_count) || 0) + 1;
 
@@ -240,11 +240,11 @@ app.post("/increment-correct-count", async (req, res) => {
       .select()
       .single();
 
-    if (updateError) return res.status(500).json({ error: updateError.message });
+    if (updateError) return res.status(500).json({ error: "更新エラー" });
     res.json(data);
 
   } catch (err) {
-    res.status(500).json({ error: "更新エラー: " + err.message });
+    res.status(500).json({ error: "更新エラー " });
   }
 });
 
@@ -262,7 +262,7 @@ app.post("/update-name", async (req, res) => {
     .maybeSingle();
 
   if (selectError) {
-    return res.status(500).json({ error: selectError.message });
+    return res.status(500).json({ error: "更新エラー" });
   }
 
   if (existingUser) {
@@ -277,11 +277,11 @@ app.post("/update-name", async (req, res) => {
       .select()
       .single();
 
-    if (updateError) return res.status(500).json({ error: updateError.message });
+    if (updateError) return res.status(500).json({ error: "更新エラー" });
     res.json(data);
 
   } catch (err) {
-    res.status(500).json({ error: "更新エラー: " + err.message });
+    res.status(500).json({ error: "更新エラー " });
   }
 });
 
@@ -300,11 +300,11 @@ app.post("/update-password", async (req, res) => {
       .select()
       .single();
 
-    if (updateError) return res.status(500).json({ error: updateError.message });
+    if (updateError) return res.status(500).json({ error: "更新エラー"});
     res.json(data);
 
   } catch (err) {
-    res.status(500).json({ error: "更新エラー: " + err.message });
+    res.status(500).json({ error: "更新エラー " });
   }
 });
 
@@ -320,13 +320,11 @@ app.post("/delete-account", async (req, res) => {
     .select(); // 削除した行を返す
 
   if (error) {
-    console.error("削除エラー:", error.message);
-    return res.status(500).json({ error: "削除エラー: " + error.message });
+    return res.status(500).json({ error: "削除エラー" });
   }
 
   if (!data.length) {
-    console.warn("該当アカウントが存在しません:", id);
-    return res.status(404).json({ error: "該当アカウントが存在しません" });
+    return res.status(404).json({ error: "削除エラー" });
   }
 
   res.json({ success: true });
