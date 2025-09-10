@@ -142,8 +142,13 @@ async function checkSignIn(){
 async function checkSignUp(){
     const name = document.getElementById("username-input").value.trim();
     const pass = document.getElementById("password-input").value.trim();
-    
+
     if(confirm("新規登録しますか？")){
+        if(pass.length < 6){
+            if(!confirm("パスワードは６桁以上を推奨しますが６桁未満で大丈夫ですか？")){
+                return;
+            }
+        }
         startLoading();
         try {
             const result = await retryOperation(() => signUp(name, pass));
@@ -186,7 +191,7 @@ async function changeName(){
         return;
     }
     
-    if(confirm(`本当にユーザー名を『${document.getElementById("new-username-input").value}』に変更しますか`)){
+    if(confirm(`本当にユーザー名を『${document.getElementById("new-username-input").value}』に変更しますか？`)){
         startLoading();
         try {
             const result = await retryOperation(() => updateUsername(localStorage.getItem("id"), newName));
@@ -211,7 +216,12 @@ async function changePassword(){
         alert("新しいパスワードを入力してください。");
         return;
     }
-    if(confirm(`本当にパスワードを変更しますか`)){
+    if(confirm(`本当にパスワードを変更しますか？`)){
+        if(newPassword.length < 6){
+            if(!confirm("パスワードは６桁以上を推奨しますが６桁未満で大丈夫ですか？")){
+                return;
+            }
+        }
         startLoading();
         try {
             await retryOperation(() => updatePassword(localStorage.getItem("id"), newPassword));
