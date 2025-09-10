@@ -210,6 +210,17 @@ label{
     align-items: center;
 }
 
+#long-loading{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-size: min(2.0vh, 3.0vw);
+    z-index: 10000;
+}
+
 .square-move-2 {
     --size: 5vh;
     --color: currentColor;
@@ -277,6 +288,56 @@ label{
     100% {
         transform: translate(0%, 0%);
     }
+}
+
+#mole-game-container {
+    position: absolute;
+    bottom: 25%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+}
+
+#mole-game-title {
+    font-size: min(1.5vh, 2.5vw);
+    color: white;
+    margin-bottom: 1vh;
+}
+
+.mole-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #7ec850;
+    border-radius: 1vh;
+
+}
+.mole {
+    width: min(14vw, 7vh);
+    height: min(14vw, 7vh);
+    cursor: pointer;
+}
+
+#moles-game{
+    display: grid;
+    grid-template-columns: repeat(3, 20vw);
+    grid-template-rows: repeat(2, 10vh);
+    gap: min(1vh, 2vw);
+    background: #ccc;
+    padding: min(1vh, 2vw);
+    border-radius: 1vh;
+}
+
+#score-display {
+    font-size: min(1.5vh, 2.5vw);
+    color: white;
+    margin-top: 1vh;
+    text-align: center;
 }
 
 button{
