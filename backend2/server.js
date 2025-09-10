@@ -10,7 +10,7 @@ const corsOptions = {
   methods: ["GET", "POST"],
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json());
 
@@ -311,10 +311,6 @@ app.post("/update-password", async (req, res) => {
 app.post("/delete-account", async (req, res) => {
   const { id } = req.body;
 
-  // 確認用ログ
-  console.log("受け取った id:", id);
-  console.log("req.body 全体:", req.body);
-
   if (!id) return res.status(400).json({ error: "id が必要です" });
 
   const { data, error } = await supabase
@@ -333,7 +329,6 @@ app.post("/delete-account", async (req, res) => {
     return res.status(404).json({ error: "該当アカウントが存在しません" });
   }
 
-  console.log("削除成功:", data);
   res.json({ success: true });
 });
 
