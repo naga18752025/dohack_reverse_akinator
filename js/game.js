@@ -65,6 +65,11 @@ async function themeToHiragana(maxRetries = 10, retryInterval = 2000) {
     return null; // 全部失敗
 }
 
+function hasInvalidChars(str) {
+    // ひらがな・カタカナ・漢字・伸ばし棒以外の文字が含まれているかをチェック
+    return /[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\u30FC]/u.test(str);
+}
+
 async function main() {
     startLoading(); // ローディング開始
 
@@ -77,6 +82,13 @@ async function main() {
     }
 
     rawTheme = await fetchTheme(10, 2000); // ←ここでPromiseを「開封」！
+
+    if(hasInvalidChars(rawTheme)){
+        alert("ゲーム開始に失敗しました。もう一度試してください。");
+        window.location.href = "index.html";
+        return;
+    }
+
     theme = await themeToHiragana(10, 2000);
 
     if (!theme) {
