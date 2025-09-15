@@ -172,8 +172,6 @@ function questionAdd(){
     newComment.classList.add("question");
     document.getElementById("comments").appendChild(newComment);
 
-    questionCounter();
-
     questionFormClose();
     document.getElementById("buttons").style.display = "none";
 
@@ -223,6 +221,10 @@ function responseAdd(){
 // AIの回答を実際に追加
 async function questionCheck(){
     const { answer: response } = await askQuestion(document.getElementById("question-input").value);
+    if(response === "通信に失敗しました"){
+    }else{
+        questionCounter();
+    }
     const lastComment = document.querySelector("#comments .response:last-child");
     lastComment.innerHTML = "";
     lastComment.textContent = response;
