@@ -13,6 +13,9 @@
   <body>
 
     <div id="account">未ログイン</div>
+    <div id="floating-help" role="button" aria-label="プレイ方法を表示" tabindex="0">
+      ❓
+    </div>
     <img src="images/title.png" alt="逆アキネーター" id="title" draggable="false" oncontextmenu="return false;" ontouchstart="return false;">
     <div class="shine-container">
       <img src="images/responser.png" alt="メインキャラクター" id="owl" draggable="false" oncontextmenu="return false;" ontouchstart="return false;">
@@ -21,6 +24,20 @@
     <button id="start-button" onclick="gameStart()">ゲーム開始</button>
     <button id="log-button" onclick="checkLog()">みんなの履歴</button>
     <button id="account-button" onclick="accountCheck()">アカウントを管理</button>
+
+    <div id="modal">
+        <div id="modal-container">
+            <div id="modal-close" onclick="modalClose()">×</div>
+            <div id="modal-content">
+                <p style="font-weight: bold;">ゲーム内容</p>
+                <p>1. AIが考えたお題（名詞）を当てるゲームです。</p>
+                <p>2. AIに質問をして「はい」か「いいえ」という回答を得ることが30回までできます。<br>（回答には「部分的にそう」「たぶんそう」「そうでもない」「たぶん違う」「わからない」という回答の可能性もあります）</p>
+                <p style="font-weight: bold;">その他の情報</p>
+                <p>1. アカウントを作成するとこれまでのプレイ回数と正解数を管理できます。<br>（正解数が増えていくとレベルが上がっていきます）</p>
+                <p>2. みんなの履歴を見て最近の出題や質問方法、頻出のお題などを確認しておくと後々考えるヒントになるかも？</p>
+            </div>
+        </div>
+    </div>
 
     <div id="loading3" style="display: none;">
       <div class="square-move-2"></div>

@@ -31,6 +31,54 @@ body {
     cursor: pointer;
 }
 
+#floating-help{
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    left: auto;
+    top: auto;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6ee7b7 0%, #3b82f6 100%);
+    box-shadow: 0 10px 30px rgba(16,24,40,0.12), 0 6px 12px rgba(59,130,246,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    cursor: grab;
+    user-select: none;
+    touch-action: none; /* pointer events 用 */
+    z-index: 9998;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+    /* 常時ふわふわアニメーション（translateY のみ） */
+    animation: floaty 3.2s ease-in-out infinite;
+    animation-play-state: running;
+}
+
+/* ホバー/アクティブ */
+#floating-help:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 36px rgba(16,24,40,0.16); }
+#floating-help:active { cursor: grabbing; transform: scale(0.98); }
+
+/* アニメーション定義（translateY のみ） */
+@keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+/* 小さい画面 */
+@media (max-width: 480px) {
+    #floating-help { width: 54px; height: 54px; font-size: 24px; right: 16px; bottom: 16px; }
+} 
+
+  /* フォーカス時の可視化 */
+#floating-help:focus {
+    outline: 3px solid rgba(255,255,255,0.18);
+    box-shadow: 0 0 0 6px rgba(59,130,246,0.10);
+} 
+
 #title{
     margin: 3vh 0;
     width: min(80%, 60vh);
@@ -130,6 +178,70 @@ body {
     padding: 0.5vh 3vw;
     box-shadow: 0 0.5vh 1vh black;
     margin-bottom: 10vh;
+}
+
+#modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background: rgba(0,0,0,50%);
+    padding: 40px 20px;
+    overflow: auto;
+    opacity: 0;
+    visibility: hidden;
+    box-sizing: border-box;
+    z-index: 9998;
+}
+
+#modal::before{
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    margin-left: -0.2em;
+}
+
+#modal.is-active{
+    opacity: 1;
+    visibility: visible;
+}
+
+#modal-container{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 80%;
+}
+
+#modal-content{
+    font-size: 1.5vh;
+    background: #fff;
+    text-align: left;
+    line-height: 1.8;
+    padding: 1.5vh;
+    border: solid rgb(0, 153, 255) 0.4vh;
+    border-radius: 0.5vh;
+    max-height: 40vh;
+    overflow-y: auto; 
+}
+
+#modal-close{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: -20px;
+    right: -20px;
+    width: 40px;
+    height: 40px;
+    color: rgb(0, 0, 0);
+    background: #b9b9b9;
+    border-radius: 0.5vh;
+    border: solid rgb(0, 153, 255) 0.3vh;
+    cursor: pointer;
 }
 
 #loading3{
