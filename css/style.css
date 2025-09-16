@@ -31,17 +31,21 @@ body {
     cursor: pointer;
 }
 
+/* --- テカテカ質感を強調したCSS --- */
 #floating-help{
     position: fixed;
     right: 24px;
     bottom: 24px;
-    left: auto;
-    top: auto;
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6ee7b7 0%, #3b82f6 100%);
-    box-shadow: 0 10px 30px rgba(16,24,40,0.12), 0 6px 12px rgba(59,130,246,0.18);
+    /* 光沢感のあるグラデーション */
+    background: linear-gradient(145deg, #5ee7df 0%, #3b82f6 100%);
+    box-shadow:
+        0 10px 30px rgba(16,24,40,0.12),
+        0 6px 12px rgba(59,130,246,0.18),
+        inset 0 2px 6px rgba(255,255,255,0.4),  /* 内側の白ハイライト */
+        inset 0 -2px 4px rgba(0,0,0,0.25);      /* 下側に少し影 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,35 +53,78 @@ body {
     color: white;
     cursor: grab;
     user-select: none;
-    touch-action: none; /* pointer events 用 */
+    touch-action: none;
     z-index: 9998;
     transition: transform 140ms ease, box-shadow 140ms ease;
-    /* 常時ふわふわアニメーション（translateY のみ） */
     animation: floaty 3.2s ease-in-out infinite;
     animation-play-state: running;
+    overflow: hidden; /* 疑似要素のはみ出し防止 */
 }
 
-/* ホバー/アクティブ */
-#floating-help:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 36px rgba(16,24,40,0.16); }
-#floating-help:active { cursor: grabbing; transform: scale(0.98); }
+/* --- テカリをより自然に見せる疑似要素 --- */
+#floating-help::before {
+    content: "";
+    position: absolute;
+    top: 6%;
+    left: 12%;
+    width: 76%;
+    height: 38%;
+    border-radius: 50%;
+    /* 白から透明へ、より緩やかに */
+    background: radial-gradient(
+        ellipse at 50% 40%,
+        rgba(255,255,255,0.55) 0%,
+        rgba(255,255,255,0.25) 35%,
+        rgba(255,255,255,0.05) 70%,
+        rgba(255,255,255,0) 100%
+    );
+    filter: blur(2px);   /* ぼかして境界を柔らかく */
+    transform: rotate(-12deg);
+    pointer-events: none;
+}
 
-/* アニメーション定義（translateY のみ） */
+/* さらに下部にうっすら反射光を追加（ごく淡い） */
+#floating-help::after {
+    content: "";
+    position: absolute;
+    bottom: 8%;
+    right: 14%;
+    width: 40%;
+    height: 20%;
+    border-radius: 50%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.05) 60%,
+        rgba(255,255,255,0) 100%
+    );
+    filter: blur(3px);
+    transform: rotate(20deg);
+    pointer-events: none;
+}
+
+
+/* ホバー時にさらに輝きを強調 */
+#floating-help:hover {
+    transform: translateY(-6px) scale(1.05);
+    box-shadow:
+        0 18px 36px rgba(16,24,40,0.18),
+        0 8px 18px rgba(59,130,246,0.22),
+        inset 0 2px 6px rgba(255,255,255,0.5),
+        inset 0 -2px 4px rgba(0,0,0,0.3);
+}
+
+/* ふわふわ上下アニメーション */
 @keyframes floaty {
     0%   { transform: translateY(0); }
     50%  { transform: translateY(-10px); }
     100% { transform: translateY(0); }
 }
 
-/* 小さい画面 */
+/* 小さい画面向け */
 @media (max-width: 480px) {
     #floating-help { width: 54px; height: 54px; font-size: 24px; right: 16px; bottom: 16px; }
-} 
-
-  /* フォーカス時の可視化 */
-#floating-help:focus {
-    outline: 3px solid rgba(255,255,255,0.18);
-    box-shadow: 0 0 0 6px rgba(59,130,246,0.10);
-} 
+}
 
 #title{
     margin: 3vh 0;
