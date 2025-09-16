@@ -31,7 +31,7 @@ app.post("/api/openai", async (req, res) => {
       const themeLog = info1;
 
       const rand = Math.random(); // 0以上1未満の乱数
-      const typeOfPrompt = rand < 0.35 ? 1 : rand < 0.70 ? 2 : 3;
+      const typeOfPrompt = rand < 0.40 ? 1 : rand < 0.80 ? 2 : 3;
 
       if(typeOfPrompt === 1){
         realPrompt = `
