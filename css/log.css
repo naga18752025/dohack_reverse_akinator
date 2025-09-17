@@ -143,7 +143,7 @@ body {
 p{
     font-size: min(2.0vh, 3.0vw);
     margin: 0.5vh 0;
-    color: #4b4b4b;
+    color: #343434;
 }
 
 .user-answer{
