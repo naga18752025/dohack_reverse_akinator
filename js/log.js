@@ -82,7 +82,7 @@ function renderHistory2(sessions) {
         const sessionInfo = document.createElement("div");
         sessionInfo.classList.add("session-info");
         sessionInfo.innerHTML = `
-            <p>${ranking}位: ${session.correct_answer}</p>
+            <p>${ranking}位: <span class="theme">${session.correct_answer}</span></p>
             <p>出題回数: ${session.answer_count}</p>
         `;
         ranking++;
@@ -197,7 +197,6 @@ function checkLog(){
 
 function checkLog2(){
     document.getElementById("log-list").style.display = "none";
-
     document.getElementById("log-list2").style.display = "flex";
     const selection = document.getElementById("selection");
     selection.children[0].classList.remove("active-log");
@@ -210,11 +209,10 @@ function searchAnswer() {
     let firstMatch = null;
 
     cards.forEach(card => {
-        const fullText = card.querySelector(".session-info").children[0].textContent.trim();
-        const answer = fullText.split(":")[1].trim();
+        const answer = card.querySelector(".theme").textContent;
         if ((answer === query) && (query !== "")) {
             card.style.backgroundColor = "#ffff99";
-            if (!firstMatch) firstMatch = card; 
+            firstMatch = card; 
         } else {
             card.style.backgroundColor = "";
         }
@@ -238,7 +236,6 @@ function logFilterOn() {
     cards.forEach(card => {
         if (card.querySelector(".user-answer").textContent === "----") {
             card.classList.add("veiled");
-            card.querySelector(".question-button").disabled = true;
         }
     });
 }
@@ -251,7 +248,6 @@ function logFilterOff() {
 
     cards.forEach(card => {
         card.classList.remove("veiled");
-        card.querySelector(".question-button").disabled = false;
     });
 }
 
