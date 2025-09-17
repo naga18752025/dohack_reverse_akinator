@@ -39,9 +39,9 @@ function renderHistory(sessions) {
         const sessionInfo = document.createElement("div");
         sessionInfo.classList.add("session-info");
         sessionInfo.innerHTML = `
-            <p>ユーザーの解答: ${session.final_guess}</p>
-            <p>正解: ${session.correct_answer}</p>
-            <p>質問回数: ${session.questions.length}回</p>
+            <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
+            <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
+            <p>質問回数: <span style="font-weight: bold;">${session.questions.length}回</span></p>
             <p>プレイ時間: ${session.play_time}</p>
         `;
 
@@ -236,12 +236,12 @@ function logFilterOn() {
     const cards = document.querySelectorAll("#log-list .session-card");
 
     cards.forEach(card => {
-        const fullText = card.querySelector(".session-info").children[0].textContent.trim();
-        const answer = fullText.split(":")[1].trim();
-        if ((answer === "----")) {
+        if (card.querySelector(".user-answer").textContent === "----") {
             card.style.backgroundColor = "#353535ff";
             card.querySelector(".question-button").style.backgroundColor = "#212121ff";
             card.querySelector(".question-button").disabled = true;
+            card.querySelector(".user-answer").style.color = "#212121ff";
+            card.querySelector(".correct-answer").style.color = "#212121ff";
         }
     });
 }
@@ -256,6 +256,8 @@ function logFilterOff() {
         card.style.backgroundColor = "white";
         card.querySelector(".question-button").style.backgroundColor = "rgb(248, 243, 0)";
         card.querySelector(".question-button").disabled = false;
+        card.querySelector(".user-answer").style.color = "rgb(205, 0, 0)";
+        card.querySelector(".correct-answer").style.color = "rgb(0, 117, 0)";
     });
 }
 

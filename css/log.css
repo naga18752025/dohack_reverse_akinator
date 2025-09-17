@@ -143,6 +143,15 @@ body {
 p{
     font-size: min(2.0vh, 3.0vw);
     margin: 0.5vh 0;
+    color: #4b4b4b;
+}
+
+.user-answer{
+    color: rgb(205, 0, 0);
+}
+
+.correct-answer{
+    color: rgb(0, 117, 0);
 }
 
 .question-button {
