@@ -237,11 +237,8 @@ function logFilterOn() {
 
     cards.forEach(card => {
         if (card.querySelector(".user-answer").textContent === "----") {
-            card.style.backgroundColor = "#353535ff";
-            card.querySelector(".question-button").style.backgroundColor = "#212121ff";
+            card.classList.add("veiled");
             card.querySelector(".question-button").disabled = true;
-            card.querySelector(".user-answer").style.color = "#212121ff";
-            card.querySelector(".correct-answer").style.color = "#212121ff";
         }
     });
 }
@@ -253,11 +250,8 @@ function logFilterOff() {
     const cards = document.querySelectorAll("#log-list .session-card");
 
     cards.forEach(card => {
-        card.style.backgroundColor = "white";
-        card.querySelector(".question-button").style.backgroundColor = "rgb(248, 243, 0)";
+        card.classList.remove("veiled");
         card.querySelector(".question-button").disabled = false;
-        card.querySelector(".user-answer").style.color = "rgb(205, 0, 0)";
-        card.querySelector(".correct-answer").style.color = "rgb(0, 117, 0)";
     });
 }
 
