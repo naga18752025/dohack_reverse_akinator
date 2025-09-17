@@ -251,6 +251,55 @@ function logFilterOff() {
     });
 }
 
+function scrollTopLogList() {
+    forceHide = true;
+    const list = document.getElementById("log-list");
+    document.getElementById("scroll-top-log-list").classList.remove("show");
+    list.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function scrollTopLogList2() {
+    forceHide = true;
+    const list2 = document.getElementById("log-list2");
+    document.getElementById("scroll-top-log-list2").classList.remove("show");
+    list2.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+let scrollTimer;
+let forceHide = false;
+let lastScrollTop = 0;
+
+
+function updateScrollButton(listId, btnId) {
+    const list = document.getElementById(listId);
+    const btn = document.getElementById(btnId);
+
+    function update() {
+        const scrollTop = list.scrollTop;
+
+        if (scrollTop > lastScrollTop) {
+            forceHide = false;
+        }
+        lastScrollTop = scrollTop;
+
+        if (forceHide) return;
+
+        btn.style.transform = `translateY(${scrollTop}px)`;
+
+        btn.classList.remove("show");
+
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            btn.classList.add("show");
+        }, 100);
+    }
+
+    update();
+    list.addEventListener("scroll", update);
+}
+updateScrollButton("log-list", "scroll-top-log-list");
+updateScrollButton("log-list2", "scroll-top-log-list2");
+
 // 初回実行
 loadInitialHistory();
 

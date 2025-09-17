@@ -89,6 +89,7 @@ body {
 }
 
 #log-list, #log-list2 {
+    position: relative;
     color: black;
     width: 100%;
     height: 60vh;
@@ -97,6 +98,27 @@ body {
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
+}
+
+#scroll-top-log-list,
+#scroll-top-log-list2 {
+    position: absolute;
+    bottom: 2vh;
+    left: 1vw;
+    z-index: 10;
+    font-size: min(1.5vh, 2.0vw);
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    padding: min(1vh, 1.5vw) min(1.5vh, 2.0vw);
+    cursor: pointer;
+    opacity: 0;
+}
+
+#scroll-top-log-list.show,
+#scroll-top-log-list2.show {
+    opacity: 1;
 }
 
 #log-filter {
