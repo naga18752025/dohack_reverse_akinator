@@ -260,19 +260,31 @@ body {
     position: relative;
     display: inline-block;
     vertical-align: middle;
-    width: 80%;
+    width: 90%;
 }
 
 #modal-content{
     font-size: 1.5vh;
-    background: #fff;
+    background-color: aliceblue;
     text-align: left;
     line-height: 1.8;
     padding: 1.5vh;
     border: solid rgb(0, 153, 255) 0.4vh;
     border-radius: 0.5vh;
-    max-height: 40vh;
-    overflow-y: auto; 
+    height: 60vh;
+    overflow-y: auto;
+}
+
+.divided-modal-content{
+    background-color: white;
+    padding: 0.5vh 2vw;
+    margin: 1vh 0;
+    border-radius: 1vh;
+    box-shadow: 0 0 0.25vh rgba(0, 0, 0, 0.7);
+}
+
+p, table{
+    margin: 1vh 0;
 }
 
 #modal-close{
