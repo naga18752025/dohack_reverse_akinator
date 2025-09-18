@@ -42,7 +42,7 @@ function renderHistory(sessions) {
             <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
             <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
             <p>質問回数: <span style="font-weight: bold;">${session.questions.length}回</span></p>
-            <p>プレイ時間: ${session.play_time}</p>
+            <p>プレイ所要時間: ${session.play_time}</p>
         `;
 
         const questionButton = document.createElement("button");
