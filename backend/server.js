@@ -290,6 +290,7 @@ app.get("/get-recent-sessions", async (req, res) => {
   const size = parseInt(req.query.size || "15");
   const after = req.query.after; // ISO8601形式の日時文字列を期待
 
+  // ✅ select から created_at を外す
   let query = supabase
     .from("sessions")
     .select(`
@@ -297,25 +298,23 @@ app.get("/get-recent-sessions", async (req, res) => {
       final_guess,
       correct_answer,
       play_time,
-      created_at,
       questions (
         question,
-        response,
-        created_at
+        response
       )
-    `)
-    .order("created_at", { ascending: false }) // sessions の順
-    .order("created_at", { foreignTable: "questions", ascending: true }); // questions の順
+    `) // ← sessionsテーブルの created_at は指定していない
+    .order("created_at", { ascending: false }) // 並び替えには使う
+    .order("created_at", { foreignTable: "questions", ascending: true }); // 質問の並び替え
 
   if (after) {
-    // afterより**古い**（小さい）created_atを取得
+    // after より古い（小さい）sessions.created_at を取得
     query = query.lt("created_at", after);
   }
 
   const { data, error } = await query.limit(size);
 
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  res.json(data); // ← sessions.created_at は返らない
 });
 
 // 人気のお題を取得
