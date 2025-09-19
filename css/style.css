@@ -299,7 +299,7 @@ p, table{
     color: rgb(0, 0, 0);
     background: #b9b9b9;
     border-radius: 0.5vh;
-    border: solid rgb(0, 153, 255) 0.3vh;
+    border: solid #000000 0.3vh;
     cursor: pointer;
 }
 
