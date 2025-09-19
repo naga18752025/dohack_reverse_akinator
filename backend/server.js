@@ -7,7 +7,12 @@ import fetch from "node-fetch"; // node-fetch@2 を使う場合
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://naga18752025.github.io", // 自分の GitHub Pages だけ許可
+  methods: ["POST"],
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
