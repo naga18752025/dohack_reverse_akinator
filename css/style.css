@@ -305,6 +305,45 @@ p, table{
     cursor: pointer;
 }
 
+/* --- ご意見フォーム --- */
+#opinion-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1vh;
+}
+
+#opinion-text {
+    width: 95%;
+    height: 12vh;
+    font-size: max(min(2.0vh, 3.0vw), 16px);
+    padding: 1vh 2vw;
+    margin-bottom: 2vh;
+    border: none;
+    border-radius: 1vh;
+    resize: vertical;
+    background-color: #fffcf9;
+    box-shadow: 0 0.5vh 1vh rgba(0,0,0,0.3) inset;
+}
+
+#opinion-submit {
+    font-size: min(2.0vh, 3vw);
+    background-color: rgb(213, 196, 114);
+    border: none;
+    border-radius: 1vh;
+    padding: 0.5vh 3vw;
+    cursor: pointer;
+    margin-bottom: 1vh;
+}
+
+.opinion-status {
+    margin: 1vh 0;
+    font-size: min(1.8vh, 2.8vw);
+    color: green;
+    display: none;
+}
+
 #loading3{
     position: fixed;
     top: 0;

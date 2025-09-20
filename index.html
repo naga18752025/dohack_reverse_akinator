@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preload" as="image" href="images/title.png">
     <link rel="preload" as="image" href="images/responser.png">
     <title>逆アキネーター</title>
@@ -34,7 +35,7 @@
                   <p>1. フクロウが考えた<span style="color: rgb(218, 0, 0);">お題（名詞）を当てるゲーム</span>です！<br>（10%の確率で難しめのお題が出ます）</p>
                   <p>2. フクロウに<span style="color: rgb(22, 0, 218);">お題に関する質問を</span>して「はい」か「いいえ」という回答を得ることが<span style="color: rgb(22, 0, 218);">30回までできます</span>。<br>（回答は「部分的にそう」「たぶんそう」「そうでもない」「たぶん違う」「わからない」である可能性もあります）</p>
                   <p>3. お題が分かったら『解答する』ボタンから名詞を入力して確定してください。</p>
-                  <p>4. <span style="color: rgb(218, 0, 0);">リロードは不正操作扱いで強制終了</span>になります</p>
+                  <p>4. <span style="color: rgb(218, 0, 0);">リロードは不正操作扱いで強制終了</span>になります。</p>
                   <p>＊ AIが質問対応をしているため、常に回答が正確であるという保証はできません。<br>（基本的には正確なはずです）</p>
                 </div>
                 <div class="divided-modal-content">
@@ -89,13 +90,12 @@
                 </div>
                 <div class="divided-modal-content">
                   <p style="font-weight: bold;">✉️ お問い合わせ</p>
-                  <p>不具合の報告やご意見・ご要望がありましたら、下記メールアドレスまでお気軽にご連絡ください。</p>
-                  <p>
-                    <a href="mailto:reverse.akinator@gmail.com" style="color: rgb(22,0,218); text-decoration: underline;">
-                      reverse.akinator@gmail.com
-                    </a>
-                  </p>
-                  <p>※返信までお時間をいただく場合があります。ご了承ください。</p>
+                  <p>不具合の報告やご意見・ご要望がありましたらお気軽にこちらからご送信ください！</p>
+                  <form id="opinion-form">
+                    <textarea id="opinion-text"></textarea>
+                    <button type="submit" id="opinion-submit">送信</button>
+                    <p id="opinion-status" class="opinion-status">送信ありがとうございました！</p>
+                  </form>
                 </div>
                 <div class="divided-modal-content">
                   <p style="font-weight: bold;">🏁 最後に</p>  
@@ -111,6 +111,7 @@
       <div class="square-move-2"></div>
     </div>
 
+    <script src="js/opinion.js"></script>
     <script src="js/script.js"></script>
   </body>
 </html>
