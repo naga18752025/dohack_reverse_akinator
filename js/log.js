@@ -221,7 +221,7 @@ function searchAnswer() {
     if (firstMatch) {
         firstMatch.scrollIntoView({ behavior: "smooth", block: "center" });
     }else{
-        alert("該当するお題は見つかりませんでした。");
+        document.getElementById("search-input").value = "該当なし";
     }
 }
 
@@ -259,7 +259,7 @@ function scrollTopLogList() {
 }
 
 function scrollTopLogList2() {
-    forceHide = true;
+    forceHide2 = true;
     const list2 = document.getElementById("log-list2");
     document.getElementById("scroll-top-log-list2").classList.remove("show");
     list2.scrollTo({ top: 0, behavior: "smooth" });
@@ -268,7 +268,6 @@ function scrollTopLogList2() {
 let scrollTimer;
 let forceHide = false;
 let lastScrollTop = 0;
-
 
 function updateScrollButton(listId, btnId) {
     const list = document.getElementById(listId);
@@ -297,8 +296,42 @@ function updateScrollButton(listId, btnId) {
     update();
     list.addEventListener("scroll", update);
 }
+
+let scrollTimer2;
+let forceHide2 = false;
+let lastScrollTop2 = 0;
+
+function updateScrollButton2(listId, btnId) {
+    const list = document.getElementById(listId);
+    const btn = document.getElementById(btnId);
+
+    function update() {
+        const scrollTop = list.scrollTop;
+
+        if (scrollTop > lastScrollTop2) {
+            forceHide2 = false;
+        }
+        lastScrollTop2 = scrollTop;
+
+        if (forceHide2) return;
+
+        btn.style.transform = `translateY(${scrollTop}px)`;
+
+        btn.classList.remove("show");
+
+        clearTimeout(scrollTimer2);
+        scrollTimer2 = setTimeout(() => {
+            btn.classList.add("show");
+        }, 100);
+    }
+
+    update();
+    list.addEventListener("scroll", update);
+}
+
 updateScrollButton("log-list", "scroll-top-log-list");
-updateScrollButton("log-list2", "scroll-top-log-list2");
+updateScrollButton2("log-list2", "scroll-top-log-list2");
+
 
 // 初回実行
 loadInitialHistory();
