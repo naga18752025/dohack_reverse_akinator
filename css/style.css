@@ -7,7 +7,7 @@
 
 
 body {
-    background-color: #2E4ABA;
+    background-color: #663100;
     width: 100%;
     height: 100%;
     display: flex;
@@ -24,7 +24,7 @@ body {
     font-size: min(1.5vh, 2.0vw);
     background-color: rgba(0, 0, 0, 0.5);
     padding: 0.5vh 1vw;
-    border-radius: none;
+    border-radius: 0.25vh;
     box-shadow: 
         0 0.25vh 0.5vh rgba(0,0,0,0.7),     /* 外側の影 */
         inset 0 0.125vh 0.25vh rgba(255,255,255,0.7); /* 内側の光 */
@@ -40,12 +40,12 @@ body {
     height: 64px;
     border-radius: 50%;
     /* 光沢感のあるグラデーション */
-    background: linear-gradient(145deg, #5ee7df 0%, #3b82f6 100%);
+    background: linear-gradient(145deg, #f6d6a7 0%, #b8742f 100%);
     box-shadow:
-        0 10px 30px rgba(16,24,40,0.12),
-        0 6px 12px rgba(59,130,246,0.18),
-        inset 0 2px 6px rgba(255,255,255,0.4),  /* 内側の白ハイライト */
-        inset 0 -2px 4px rgba(0,0,0,0.25);      /* 下側に少し影 */
+        0 10px 30px rgba(60,40,20,0.12),
+        0 6px 12px rgba(184,116,47,0.22),
+        inset 0 2px 6px rgba(255,255,255,0.4),
+        inset 0 -2px 4px rgba(0,0,0,0.25);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,8 +108,8 @@ body {
 #floating-help:hover {
     transform: translateY(-6px) scale(1.05);
     box-shadow:
-        0 18px 36px rgba(16,24,40,0.18),
-        0 8px 18px rgba(59,130,246,0.22),
+        0 18px 36px rgba(60,40,20,0.18),
+        0 8px 18px rgba(184,116,47,0.25),
         inset 0 2px 6px rgba(255,255,255,0.5),
         inset 0 -2px 4px rgba(0,0,0,0.3);
 }
@@ -210,7 +210,7 @@ body {
     font-size: min(2.5vh, 4vw);
     margin-top: 3vh;
     margin-bottom: 10vh;
-    background-color: rgb(170, 255, 239);
+    background-color: rgb(255, 231, 49);
     border: none;
     border-radius: 1vh;
     padding: 0.5vh 3vw;
@@ -235,6 +235,8 @@ body {
     height: 100%;
     text-align: center;
     background: rgba(0,0,0,50%);
+    backdrop-filter: blur(0.25vh);
+    -webkit-backdrop-filter: blur(0.25vh);
     padding: 40px 20px;
     overflow: auto;
     opacity: 0;
@@ -265,11 +267,11 @@ body {
 
 #modal-content{
     font-size: 1.5vh;
-    background-color: aliceblue;
+    background-color: rgb(255, 241, 214);
     text-align: left;
     line-height: 1.8;
     padding: 1.5vh;
-    border: solid rgb(0, 153, 255) 0.4vh;
+    border: solid rgb(125, 54, 0) 0.4vh;
     border-radius: 0.5vh;
     height: 60vh;
     overflow-y: auto;

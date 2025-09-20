@@ -26,7 +26,7 @@ function back(){
 
 let log = [];
 let loadCount = 1;
-const pageSize = 10;
+const pageSize = 15;
 let lastFetchedAt = null;
 
 function renderHistory(sessions) {
