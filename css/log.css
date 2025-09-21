@@ -62,9 +62,34 @@ body {
 }
 
 #log-title {
+    width: 100%;
+    position: relative;
     font-size: min(3.0vh, 4vw);
     margin: 1vh 0;
     color: white;
+    text-align: center;
+}
+
+#reload{
+    position: absolute;
+    height: 100%;
+    right: 2vw;
+    padding: 0.2vh;
+    border: #9c9c9c 0.2vh solid;
+    border-radius: 0.5vh;
+}
+
+.reload-inner {
+    /* 中身だけ回転 */
+    display: inline-block;
+    animation: spin 1.2s linear infinite;
+    /* 回転の中心を中央に */
+    transform-origin: center center;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
 
 #selection {

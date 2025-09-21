@@ -332,6 +332,26 @@ function updateScrollButton2(listId, btnId) {
 updateScrollButton("log-list", "scroll-top-log-list");
 updateScrollButton2("log-list2", "scroll-top-log-list2");
 
+function reload(){
+    document.querySelectorAll(".session-card").forEach(card => {
+        card.remove();
+    });
+    document.querySelectorAll("hr").forEach(hr => {
+        hr.remove();
+    })
+    document.getElementById("load-more-button").remove();
+    log = [];
+    loadCount = 1;
+    lastFetchedAt = null;
+    logFilterOff();
+    document.getElementById("reload-inner").classList.add("reload-inner");
+    loadInitialHistory();
+    setTimeout(() => {
+        document.getElementById("reload-inner").classList.remove("reload-inner");
+    }, 500);
+    scrollTopLogList();
+    scrollTopLogList2();
+}
 
 // 初回実行
 loadInitialHistory();
