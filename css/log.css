@@ -125,6 +125,26 @@ body {
     overflow-y: auto;
 }
 
+#log-list::after, #log-list2::after{
+    content: "";
+    position: absolute;
+    border: none;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(0.25vh);
+    -webkit-backdrop-filter: blur(0.25vh);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 100;
+    transition: opacity 0.3s;
+}
+
+#log-list.veiled::after, #log-list2.veiled::after {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 #scroll-top-log-list,
 #scroll-top-log-list2 {
     position: absolute;

@@ -17,6 +17,9 @@ function stopLoading() {
     document.getElementById("loading3").style.display = "none";
     document.getElementById("long-loading").style.display = "none";
     document.getElementById("mole-game-container").style.display = "none";
+    document.getElementById("log-list").classList.remove("veiled");
+    document.getElementById("log-list2").classList.remove("veiled");
+    document.getElementById("reload-inner").classList.remove("reload-inner");
 }
 
 function back(){
@@ -102,9 +105,15 @@ function renderHistory2(sessions) {
     });
 }
 
+let firstLoading = true
+
 // 初回読み込み
 async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
-    startLoading();
+
+    if(firstLoading){
+        startLoading();
+        firstLoading = false;
+    }
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
@@ -403,22 +412,23 @@ updateScrollButton("log-list", "scroll-top-log-list");
 updateScrollButton2("log-list2", "scroll-top-log-list2");
 
 function reload(){
+    document.getElementById("log-list").classList.add("veiled");
+    document.getElementById("log-list2").classList.add("veiled");
     document.querySelectorAll(".session-card").forEach(card => {
         card.remove();
     });
     document.querySelectorAll("hr").forEach(hr => {
         hr.remove();
     })
-    document.getElementById("load-more-button").remove();
+    if(document.getElementById("load-more-button")){
+        document.getElementById("load-more-button").remove();
+    }
     log = [];
     loadCount = 1;
     lastFetchedAt = null;
     logFilterOff();
     document.getElementById("reload-inner").classList.add("reload-inner");
     loadInitialHistory();
-    setTimeout(() => {
-        document.getElementById("reload-inner").classList.remove("reload-inner");
-    }, 500);
     scrollTopLogList();
     scrollTopLogList2();
 }
