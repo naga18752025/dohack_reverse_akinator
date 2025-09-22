@@ -45,15 +45,15 @@ function renderHistory(sessions) {
             sessionInfo.innerHTML = `
                 <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
                 <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-                <p>質問回数: ${session.questions.length}回（ヒント<span class="hint">あり</span>）</p>
-                <p>プレイ所要時間: ${session.play_time}</p>
+                <p>質問回数: ${session.questions.length}回<span class="hint">(ヒントを使用)</span></p>
+                <p>終了タイム: ${session.play_time}</p>
             `;
         }else{
             sessionInfo.innerHTML = `
                 <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
                 <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-                <p>質問回数: ${session.questions.length}回（ヒント<span class="hint">なし</span>）</p>
-                <p>プレイ所要時間: ${session.play_time}</p>
+                <p>質問回数: ${session.questions.length}回<span class="hint"></span></p>
+                <p>終了タイム: ${session.play_time}</p>
             `;
         }
 
@@ -305,7 +305,7 @@ function hint1logFilterOn() {
     const cards = document.querySelectorAll("#log-list .session-card");
 
     cards.forEach(card => {
-        if (card.querySelector(".hint").textContent === "なし") {
+        if (card.querySelector(".hint").textContent === "") {
             card.classList.add("veiled");
         }
     });
@@ -319,7 +319,7 @@ function hint0logFilterOn() {
     const cards = document.querySelectorAll("#log-list .session-card");
 
     cards.forEach(card => {
-        if (card.querySelector(".hint").textContent === "あり") {
+        if (card.querySelector(".hint").textContent === "(ヒントを使用)") {
             card.classList.add("veiled");
         }
     });
