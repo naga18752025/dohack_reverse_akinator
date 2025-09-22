@@ -28,7 +28,10 @@
         <div id="log-list">
             <div id="log-filter">
                 <div onclick="logFilterOff()" class="active-filter">全て</div>
-                <div onclick="logFilterOn()">最終解答あり</div>
+                <div onclick="answer1logFilterOn()">最終解答あり</div>
+                <div onclick="answer0logFilterOn()">最終解答なし</div>
+                <div onclick="hint1logFilterOn()">ヒントあり</div>
+                <div onclick="hint0logFilterOn()">ヒントなし</div>
             </div>
             <!-- ログがここに表示されます -->
             <button id="scroll-top-log-list" onclick="scrollTopLogList()">▲</button>

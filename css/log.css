@@ -147,20 +147,50 @@ body {
 }
 
 #log-filter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1vw;
+    width: 80%;
+    min-height: calc(min(2.0vh, 3.0vw) + 4vh); 
     margin: 1vh 0;
+    padding: 1vh 2vw;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    background-color: #f1f1f1;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    /* フェード用マスク */
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,          /* 左端を透明に */
+        black 2vw,              /* 2vw までで不透明 */
+        black calc(100% - 2vw), /* 右端2vw手前まで不透明 */
+        transparent 100%        /* 右端を透明に */
+    );
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+
+    /* Firefoxなど標準マスク対応ブラウザ用 */
+    mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        black 2vw,
+        black calc(100% - 2vw),
+        transparent 100%
+    );
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
 }
 
-#log-filter div{
+#log-filter div {
+    flex: 0 0 auto;
     padding: 0.5vh 2vw;
     border: #cdcdcd solid 0.125vh;
     border-radius: 2vh;
     background-color: #ffffff;
     cursor: pointer;
     font-size: min(2.0vh, 3.0vw);
+    text-align: center;
+    align-items: center;
 }
 
 #log-filter div.active-filter{

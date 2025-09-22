@@ -42,14 +42,14 @@ function renderHistory(sessions) {
             sessionInfo.innerHTML = `
                 <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
                 <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-                <p>質問回数: ${session.questions.length}回（ヒントあり）</p>
+                <p>質問回数: ${session.questions.length}回（ヒント<span class="hint">あり</span>）</p>
                 <p>プレイ所要時間: ${session.play_time}</p>
             `;
         }else{
             sessionInfo.innerHTML = `
                 <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
                 <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-                <p>質問回数: ${session.questions.length}回（ヒントなし）</p>
+                <p>質問回数: ${session.questions.length}回（ヒント<span class="hint">なし</span>）</p>
                 <p>プレイ所要時間: ${session.play_time}</p>
             `;
         }
@@ -254,7 +254,8 @@ function searchAnswer() {
 
 let filterOn = false;
 
-function logFilterOn() {
+function answer1logFilterOn() {
+    logFilterOff();
     filterOn = true;
     document.getElementById("log-filter").children[0].classList.remove("active-filter");
     document.getElementById("log-filter").children[1].classList.add("active-filter");
@@ -267,10 +268,52 @@ function logFilterOn() {
     });
 }
 
+function answer0logFilterOn() {
+    logFilterOff();
+    filterOn = true;
+    document.getElementById("log-filter").children[0].classList.remove("active-filter");
+    document.getElementById("log-filter").children[2].classList.add("active-filter");
+    const cards = document.querySelectorAll("#log-list .session-card");
+
+    cards.forEach(card => {
+        if (card.querySelector(".user-answer").textContent !== "----") {
+            card.classList.add("veiled");
+        }
+    });
+}
+
+function hint1logFilterOn() {
+    logFilterOff();
+    filterOn = true;
+    document.getElementById("log-filter").children[0].classList.remove("active-filter");
+    document.getElementById("log-filter").children[3].classList.add("active-filter");
+    const cards = document.querySelectorAll("#log-list .session-card");
+
+    cards.forEach(card => {
+        if (card.querySelector(".hint").textContent === "なし") {
+            card.classList.add("veiled");
+        }
+    });
+}
+
+function hint0logFilterOn() {
+    logFilterOff();
+    filterOn = true;
+    document.getElementById("log-filter").children[0].classList.remove("active-filter");
+    document.getElementById("log-filter").children[4].classList.add("active-filter");
+    const cards = document.querySelectorAll("#log-list .session-card");
+
+    cards.forEach(card => {
+        if (card.querySelector(".hint").textContent === "あり") {
+            card.classList.add("veiled");
+        }
+    });
+}
+
 function logFilterOff() {
     filterOn = false;
+    document.querySelector(".active-filter").classList.remove("active-filter");
     document.getElementById("log-filter").children[0].classList.add("active-filter");
-    document.getElementById("log-filter").children[1].classList.remove("active-filter");
     const cards = document.querySelectorAll("#log-list .session-card");
 
     cards.forEach(card => {
