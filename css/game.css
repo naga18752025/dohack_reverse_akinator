@@ -59,10 +59,20 @@ body {
     align-items: center;
 }
 
+#hint-button{
+    font-size: min(1.5vh, 3vw);
+    align-self: flex-start;
+    background-color: yellow;
+    border: none;
+    border-radius: 0.5vh;
+    width: 20vw;
+    height: 3vh;
+}
+
 #timer {
     color: white;
     margin-left: 2vw;
-    align-self: flex-start;
+    align-self:center;
     font-size: min(2.0vh, 3.5vw);
     height: 3vh;
 }
@@ -174,6 +184,17 @@ body {
     border-top: 1.8vh solid transparent;
     border-bottom: 1.8vh solid transparent;
     border-left: 2.0vh solid #d4b58a; 
+}
+
+.hint{
+    font-size: min(1.6vh, 2.3vw);
+    position: relative;
+    background-color: yellow;
+    width: 90%;
+    border: none;
+    border-radius: 1vh;
+    padding: 1vh 1vw;
+    margin: 1vh 0;
 }
 
 #buttons{

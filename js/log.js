@@ -38,12 +38,21 @@ function renderHistory(sessions) {
 
         const sessionInfo = document.createElement("div");
         sessionInfo.classList.add("session-info");
-        sessionInfo.innerHTML = `
-            <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
-            <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-            <p>質問回数: <span style="font-weight: bold;">${session.questions.length}回</span></p>
-            <p>プレイ所要時間: ${session.play_time}</p>
-        `;
+        if(session.hint){
+            sessionInfo.innerHTML = `
+                <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
+                <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
+                <p>質問回数: ${session.questions.length}回（ヒントあり）</p>
+                <p>プレイ所要時間: ${session.play_time}</p>
+            `;
+        }else{
+            sessionInfo.innerHTML = `
+                <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
+                <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
+                <p>質問回数: ${session.questions.length}回（ヒントなし）</p>
+                <p>プレイ所要時間: ${session.play_time}</p>
+            `;
+        }
 
         const questionButton = document.createElement("button");
         questionButton.textContent = "質問を見る";
@@ -166,11 +175,29 @@ function modalOpen(targetId) {
     const session = log.find(s => s.id === targetId);
     const content = document.getElementById("modal-content");
     content.innerHTML = "";
-    if (!session.questions || session.questions.length === 0) {
+    if ((!session.questions || session.questions.length === 0) && !session.hint) {
         content.innerHTML = "<p>なし</p>";
     } else {
         let order = 1;
+        if((session.questions.length === 0) && (session.hintPosition === 1)){
+                const p = document.createElement("p");
+                p.innerHTML = `
+                ヒントを使用：${session.hint}
+                `;
+                p.style.color = "red";
+                content.appendChild(p);
+        }
         session.questions.forEach(q => {
+
+            if(parseInt(session.hintPosition) === order){
+                const p = document.createElement("p");
+                p.innerHTML = `
+                ヒントを使用：${session.hint}
+                `;
+                p.style.color = "red";
+                content.appendChild(p);
+            }
+
             const p = document.createElement("p");
             p.innerHTML = `
                 Q${order}: ${q.question}<br>

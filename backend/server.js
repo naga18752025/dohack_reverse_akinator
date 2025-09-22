@@ -16,7 +16,6 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-// 環境変数から読み込む（RenderのDashboardで設定）
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY // ← サーバー用の安全なキー
@@ -31,7 +30,7 @@ app.post("/api/openai", async (req, res) => {
     if(prompt === 0){
       const themeLog = info1;
 
-      const rand = Math.random(); // 0以上1未満の乱数
+      const rand = Math.random();
       const typeOfPrompt = rand < 0.45 ? 1 : rand < 0.90 ? 2 : 3;
 
       if(typeOfPrompt === 1){
@@ -274,6 +273,18 @@ app.post("/update-session", async (req, res) => {
   res.json({ success: true });
 });
 
+// ヒント追加
+app.post("/add-hint", async (req, res) => {
+  const { sessionId, hintNumber, hintText } = req.body;
+  const { data, error } = await supabase
+    .from("sessions")
+    .update([{ hintPosition: hintNumber, hint: hintText }])
+    .eq("id", sessionId);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // 質問追加
 app.post("/add-question", async (req, res) => {
   const { sessionId, questionText, responseText } = req.body;
@@ -288,7 +299,7 @@ app.post("/add-question", async (req, res) => {
 // 履歴取得（ページネーション）
 app.get("/get-recent-sessions", async (req, res) => {
   const size = parseInt(req.query.size || "15");
-  const after = req.query.after; // ISO8601形式の日時文字列を期待
+  const after = req.query.after;
 
   let query = supabase
     .from("sessions")
@@ -297,6 +308,8 @@ app.get("/get-recent-sessions", async (req, res) => {
       final_guess,
       correct_answer,
       play_time,
+      hintPosition,
+      hint,
       created_at,
       questions (
         question,
@@ -389,7 +402,7 @@ app.post("/login", async (req, res) => {
   // ユーザー取得
   const { data: user, error: selectError } = await supabase
     .from("account")
-    .select("id, user_name, password, play_count, correct_count") // ← ハッシュ済みパスワードも取得
+    .select("id, user_name, password, play_count, correct_count")
     .eq("user_name", user_name)
     .maybeSingle();
 
@@ -402,7 +415,7 @@ app.post("/login", async (req, res) => {
   }
 
   try {
-    // 入力された password とハッシュを照合
+
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {

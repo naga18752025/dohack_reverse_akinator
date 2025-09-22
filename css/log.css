@@ -282,12 +282,16 @@ p{
 }
 
 #back-button {
-    font-size: min(2.0vh, 2.5vw);
-    background-color: rgb(229, 229, 229);
+    background-color: rgb(255, 255, 255);
     border: none;
     border-radius: 0.5vh;
-    padding: 0.5vh 3vw;
+    padding: 0.5vh 3vw 0 3vw;
     margin: 1vh 0;
+}
+
+.home-icon {
+    width:  min(3vh, 4vw);
+    height: min(3vh, 4vw);
 }
 
 #modal{

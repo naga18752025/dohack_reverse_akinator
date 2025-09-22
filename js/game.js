@@ -22,8 +22,6 @@ function stopLoading() {
 let rawTheme = null;
 let theme = null;
 let sessionId = null;
-let question = null;
-let response = null;
 
 async function fetchTheme(maxRetries = 10, retryInterval = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -110,6 +108,32 @@ async function main() {
 }
 
 main();
+
+let usedHint = false;
+
+async function getHint(){
+    if(usedHint){
+        alert("ヒントは使用済みです");
+        return;
+    }
+    if(confirm("本当にヒントを使用しますか")){
+        const num = Math.floor(Math.random() * (theme.length - 1)) + 1;
+        const hint = `${num + 1}番目の文字は「${theme.charAt(num)}」です`;
+        const newComment = document.createElement("div");
+        newComment.textContent = hint;
+        newComment.classList.add("hint");
+        document.getElementById("comments").appendChild(newComment);
+        document.getElementById("hint-button").style.backgroundColor = "gray";
+        setTimeout(() => {
+            comments.scrollTop = comments.scrollHeight;
+        }, 0);
+        usedHint = true;
+        try {
+            await addHint(sessionId, (30 - questionNokori), hint);
+        } catch {
+        }
+    }
+}
 
 // ゲームの中断
 function gameQuit(){
@@ -228,7 +252,7 @@ async function questionCheck(){
     const lastComment = document.querySelector("#comments .response:last-child");
     lastComment.innerHTML = "";
     lastComment.textContent = response;
-    question = document.getElementById("question-input").value;
+    const question = document.getElementById("question-input").value;
     try {
         await addQuestion(sessionId, question, response);
     } catch{
@@ -283,6 +307,8 @@ async function answerCheck(){
 
     answerFormClose();
     document.getElementById("buttons").style.display = "none";
+    document.getElementById("quit").style.display = "none";
+    document.getElementById("hint-button").style.display = "none";
 
     setTimeout(() => {
         if(theme === document.getElementById("answer-input").value.trim()){

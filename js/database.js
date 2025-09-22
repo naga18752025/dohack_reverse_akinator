@@ -20,6 +20,16 @@ async function updateSession(sessionId, finalGuess, playTime) {
   return res.ok;
 }
 
+async function addHint(sessionId,hintNumber, hintText) {
+  const res = await fetch(`${API_URL}/add-hint`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId, hintNumber, hintText })
+  });
+  if (!res.ok) return null;
+  return await res.json();
+}
+
 async function addQuestion(sessionId, questionText, responseText) {
   const res = await fetch(`${API_URL}/add-question`, {
     method: "POST",
