@@ -172,8 +172,14 @@ async function loadMoreHistory() {
         alert("履歴の読み込み中にエラーが発生しました。");
     } finally {
         stopLoading();
-        if(filterOn) {
-            logFilterOn();
+        if(filter === 1) {
+            answer1logFilterOn();
+        }else if(filter === 2){
+            answer0logFilterOn();
+        }else if(filter === 3){
+            hint1logFilterOn();
+        }else if(filter === 4){
+            hint0logFilterOn();
         }
     }
 }
@@ -261,11 +267,11 @@ function searchAnswer() {
     }
 }
 
-let filterOn = false;
+let filter = 0;
 
 function answer1logFilterOn() {
     logFilterOff();
-    filterOn = true;
+    filter = 1;
     document.getElementById("log-filter").children[0].classList.remove("active-filter");
     document.getElementById("log-filter").children[1].classList.add("active-filter");
     const cards = document.querySelectorAll("#log-list .session-card");
@@ -279,7 +285,7 @@ function answer1logFilterOn() {
 
 function answer0logFilterOn() {
     logFilterOff();
-    filterOn = true;
+    filter = 2;
     document.getElementById("log-filter").children[0].classList.remove("active-filter");
     document.getElementById("log-filter").children[2].classList.add("active-filter");
     const cards = document.querySelectorAll("#log-list .session-card");
@@ -293,7 +299,7 @@ function answer0logFilterOn() {
 
 function hint1logFilterOn() {
     logFilterOff();
-    filterOn = true;
+    filter = 3;
     document.getElementById("log-filter").children[0].classList.remove("active-filter");
     document.getElementById("log-filter").children[3].classList.add("active-filter");
     const cards = document.querySelectorAll("#log-list .session-card");
@@ -307,7 +313,7 @@ function hint1logFilterOn() {
 
 function hint0logFilterOn() {
     logFilterOff();
-    filterOn = true;
+    filter = 4;
     document.getElementById("log-filter").children[0].classList.remove("active-filter");
     document.getElementById("log-filter").children[4].classList.add("active-filter");
     const cards = document.querySelectorAll("#log-list .session-card");
@@ -320,7 +326,7 @@ function hint0logFilterOn() {
 }
 
 function logFilterOff() {
-    filterOn = false;
+    filter = 0;
     document.querySelector(".active-filter").classList.remove("active-filter");
     document.getElementById("log-filter").children[0].classList.add("active-filter");
     const cards = document.querySelectorAll("#log-list .session-card");
