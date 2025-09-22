@@ -285,7 +285,9 @@ async function answerCheck(){
     document.querySelectorAll(".response").forEach(R => {
         R.style.display = "none";
     })
-    document.querySelector(".hint").style.display = "none";
+    if(document.querySelector(".hint")){
+        document.querySelector(".hint").style.display = "none";
+    }
 
     // 解答確認中の画面を作成して表示
     const newComment = document.createElement("div");
