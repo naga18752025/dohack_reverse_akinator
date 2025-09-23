@@ -14,9 +14,6 @@ function stopLoading() {
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
 
-    document.querySelectorAll(".owl-shadow").forEach(shadow => {
-        shadow.classList.remove("show");
-    });
     document.getElementById("loading3").style.display = "none";
     document.getElementById("long-loading").style.display = "none";
     document.getElementById("mole-game-container").style.display = "none";
@@ -421,9 +418,6 @@ updateScrollButton("log-list", "scroll-top-log-list");
 updateScrollButton2("log-list2", "scroll-top-log-list2");
 
 function reload(){
-    document.querySelectorAll(".owl-shadow").forEach(shadow => {
-        shadow.classList.add("show");
-    });
     document.getElementById("log-list").classList.add("veiled");
     document.getElementById("log-list2").classList.add("veiled");
     document.querySelectorAll(".session-card").forEach(card => {
