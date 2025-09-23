@@ -194,7 +194,7 @@ function modalOpen(targetId) {
         content.innerHTML = "<p>なし</p>";
     } else {
         let order = 1;
-        if((session.questions.length === 0) && (session.hintPosition === 1)){
+        if((session.questions.length === 0) && (parseInt(session.hintPosition) === 1)){
                 const p = document.createElement("p");
                 p.innerHTML = `
                 ヒントを使用：${session.hint}
@@ -204,6 +204,14 @@ function modalOpen(targetId) {
         }
         session.questions.forEach(q => {
 
+            
+            const p = document.createElement("p");
+            p.innerHTML = `
+            Q${order}: ${q.question}<br>
+            A: ${q.response}
+            `;
+            content.appendChild(p);
+            order++;
             if(parseInt(session.hintPosition) === order){
                 const p = document.createElement("p");
                 p.innerHTML = `
@@ -212,14 +220,6 @@ function modalOpen(targetId) {
                 p.style.color = "red";
                 content.appendChild(p);
             }
-
-            const p = document.createElement("p");
-            p.innerHTML = `
-                Q${order}: ${q.question}<br>
-                A: ${q.response}
-            `;
-            content.appendChild(p);
-            order++;
         });
     }
     modal.classList.add('is-active');
