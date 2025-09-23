@@ -6,6 +6,7 @@
     <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>逆アキネーター|ログ</title>
+    <link rel="stylesheet" href="css/loading.css" />
     <link rel="stylesheet" href="css/log.css" />
 </head>
 
@@ -58,6 +59,7 @@
     </div>
 
     <div id="loading3" style="display: flex;">
+        <button id="stop-loading" style="display: none;" onclick="back()">中止</button>
         <p id="long-loading" style="display: none;">少し時間がかかる場合があります<br>もう少々お待ちください</p>
         <div class="square-move-2"></div>
         <div id="mole-game-container" style="display: none;">
