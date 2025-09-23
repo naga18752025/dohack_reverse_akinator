@@ -14,6 +14,9 @@ function stopLoading() {
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
 
+    document.querySelectorAll(".owl-shadow").forEach(shadow => {
+        shadow.classList.remove("show");
+    });
     document.getElementById("loading3").style.display = "none";
     document.getElementById("long-loading").style.display = "none";
     document.getElementById("mole-game-container").style.display = "none";
@@ -336,18 +339,18 @@ function logFilterOff() {
     });
 }
 
-function scrollTopLogList() {
+function scrollTopLogList(how) {
     forceHide = true;
     const list = document.getElementById("log-list");
     document.getElementById("scroll-top-log-list").classList.remove("show");
-    list.scrollTo({ top: 0, behavior: "smooth" });
+    list.scrollTo({ top: 0, behavior: how });
 }
 
-function scrollTopLogList2() {
+function scrollTopLogList2(how) {
     forceHide2 = true;
     const list2 = document.getElementById("log-list2");
     document.getElementById("scroll-top-log-list2").classList.remove("show");
-    list2.scrollTo({ top: 0, behavior: "smooth" });
+    list2.scrollTo({ top: 0, behavior: how });
 }
 
 let scrollTimer;
@@ -418,6 +421,9 @@ updateScrollButton("log-list", "scroll-top-log-list");
 updateScrollButton2("log-list2", "scroll-top-log-list2");
 
 function reload(){
+    document.querySelectorAll(".owl-shadow").forEach(shadow => {
+        shadow.classList.add("show");
+    });
     document.getElementById("log-list").classList.add("veiled");
     document.getElementById("log-list2").classList.add("veiled");
     document.querySelectorAll(".session-card").forEach(card => {
@@ -435,8 +441,8 @@ function reload(){
     logFilterOff();
     document.getElementById("reload-inner").classList.add("reload-inner");
     loadInitialHistory();
-    scrollTopLogList();
-    scrollTopLogList2();
+    scrollTopLogList("auto");
+    scrollTopLogList2("auto");
 }
 
 // 初回実行

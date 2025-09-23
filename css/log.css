@@ -61,6 +61,19 @@ body {
         inset 0 0.125vh 0.25vh rgba(255,255,255,0.7); /* 内側の光 */
 }
 
+.owl-shadow {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 85%;
+    filter: brightness(0) saturate(100%);
+    opacity: 0;
+}
+
+.owl-shadow.show{
+    opacity: 0.3;
+}
+
 #log-title {
     width: 100%;
     position: relative;
