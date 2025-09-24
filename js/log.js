@@ -194,7 +194,7 @@ function modalOpen(targetId) {
         content.innerHTML = "<p>なし</p>";
     } else {
         let order = 1;
-        if((session.questions.length === 0) && (parseInt(session.hintPosition) === 1)){
+        if(parseInt(session.hintPosition) === 1){
                 const p = document.createElement("p");
                 p.innerHTML = `
                 ヒントを使用：${session.hint}
