@@ -101,8 +101,9 @@ async function getHint(){
 async function gameQuit(){
     const result = confirm("本当にゲームを中断しますか？");
     if(result){
-        await updateSession(sessionId, "----", "--:--");
-        document.getElementById("loading3").style.display = "flex";
+        startLoading();
+        await updateSession(sessionId, "----", "中断");
+        sessionId = null;
         window.location.href = "index.html";
     }
 }
@@ -279,6 +280,7 @@ async function sendAnswerWithRetry(sessionId, answerInput, timer, maxRetries = 3
     while (attempt < maxRetries) {
         try {
             const { answer, isCorrect } = await updateSession(sessionId, answerInput, timer);
+            sessionId = null;
             return { answer, isCorrect };
         } catch (err) {
             lastError = err;
