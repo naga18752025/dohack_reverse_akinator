@@ -282,7 +282,7 @@ async function answerCheck(){
     document.getElementById("hint-button").style.display = "none";
 
     try {
-        const { answer, isCorrect } = await sendAnswerWithRetry(sessionId, answerInput, timerValue, 3);
+        const { answer, isCorrect } = await sendAnswerWithRetry(sessionId, document.getElementById("answer-input").value.trim(), stopTimer(), 3);
 
         document.getElementById("check-answer-text2").textContent = answer;
 
