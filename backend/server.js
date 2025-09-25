@@ -408,7 +408,7 @@ app.get("/get-recent-sessions", async (req, res) => {
 
   const sanitized = data.map((item, index) => {
     const isLast = index === data.length - 1;
-    const { id, created_at, ...rest } = item;
+    const { created_at, ...rest } = item;
     return isLast ? { ...rest, created_at } : rest;
   });
 
