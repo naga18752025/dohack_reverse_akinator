@@ -172,7 +172,7 @@ function modalOpen(targetId) {
         content.innerHTML = "<p>なし</p>";
     } else {
         let order = 1;
-        if(parseInt(session.hintPosition) === 1){
+        if(parseInt(session.hintposition) === 1){
                 const p = document.createElement("p");
                 p.innerHTML = `
                 ヒントを使用：${session.hint}
@@ -189,7 +189,7 @@ function modalOpen(targetId) {
             `;
             content.appendChild(p);
             order++;
-            if(parseInt(session.hintPosition) === order){
+            if(parseInt(session.hintposition) === order){
                 const p = document.createElement("p");
                 p.innerHTML = `
                 ヒントを使用：${session.hint}
