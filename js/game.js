@@ -73,26 +73,47 @@ main();
 
 let usedHint = false;
 
-async function getHint(){
-    if(usedHint){
+async function getHint() {
+    if (usedHint) {
         alert("ヒントは使用済みです");
         return;
     }
-    if(confirm("本当にヒントを使用しますか")){
-        const num = Math.floor(Math.random() * (theme.length - 1)) + 1;
-        const hint = `${num + 1}番目の文字は「${theme.charAt(num)}」です`;
-        const newComment = document.createElement("div");
-        newComment.textContent = hint;
-        newComment.classList.add("hint");
-        document.getElementById("comments").appendChild(newComment);
-        document.getElementById("hint-button").style.backgroundColor = "gray";
-        setTimeout(() => {
-            comments.scrollTop = comments.scrollHeight;
-        }, 0);
-        usedHint = true;
+
+    if (confirm("本当にヒントを使用しますか")) {
         try {
-            await addHint(sessionId, (30 - questionNokori), hint);
-        } catch {
+            usedHint = true;
+            document.getElementById("hint-button").style.backgroundColor = "gray";
+            const newComment = document.createElement("div");
+            const comment = document.createElement("span");
+            comment.textContent = "・";
+            newComment.classList.add("hint");
+            newComment.classList.add("loading");
+            for (let i = 0; i < 5; i++) {
+                const clone = comment.cloneNode(true);
+                newComment.appendChild(clone);
+            }
+            const comments = document.getElementById("comments");
+            comments.appendChild(newComment);
+            setTimeout(() => {
+                comments.scrollTop = comments.scrollHeight;
+            }, 0);
+            document.getElementById("buttons").style.display = "none";
+            const result = await addHint(sessionId, (30 - questionNokori));
+            
+            if (!result.success) {
+                alert("ヒントの取得に失敗しました");
+                document.querySelector(".hint").remove();
+                document.getElementById("buttons").style.display = "flex";
+                return;
+            }
+
+            const hint = result.hint;
+            newComment.textContent = hint;
+            document.getElementById("buttons").style.display = "flex";
+        } catch (err) {
+            alert("ヒントの取得中にエラーが発生しました");
+            document.querySelector(".hint").remove();
+            document.getElementById("buttons").style.display = "flex";
         }
     }
 }
@@ -102,7 +123,10 @@ async function gameQuit(){
     const result = confirm("本当にゲームを中断しますか？");
     if(result){
         startLoading();
-        await updateSession(sessionId, "----", "中断");
+        try {
+            await updateSession(sessionId, "----", "中断");
+        } catch {
+        }
         sessionId = null;
         window.location.href = "index.html";
     }

@@ -10,14 +10,26 @@ async function updateSession(sessionId, finalGuess, playTime) {
   return await res.json();
 }
 
-async function addHint(sessionId,hintNumber, hintText) {
-  const res = await fetch(`${API_URL}/add-hint`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId, hintNumber, hintText })
-  });
-  if (!res.ok) return null;
-  return await res.json();
+async function addHint(sessionId, hintNumber) {
+  try {
+    const res = await fetch(`${API_URL}/add-hint`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId, hintNumber })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      console.error("addHint error:", errorData.error || res.statusText);
+      return { success: false, error: errorData.error || "通信エラー" };
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("addHint fetch exception:", err);
+    return { success: false, error: err.message };
+  }
 }
 
 async function getRecentSessionsWithQuestions(after = null, size = 15) {

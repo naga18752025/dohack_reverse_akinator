@@ -350,14 +350,48 @@ app.post("/update-session", async (req, res) => {
 
 // ヒント追加
 app.post("/add-hint", async (req, res) => {
-  const { sessionId, hintNumber, hintText } = req.body;
-  const { data, error } = await supabase
-    .from("sessions")
-    .update([{ hintPosition: hintNumber, hint: hintText }])
-    .eq("id", sessionId);
+  const { sessionId, hintNumber } = req.body;
 
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  try {
+    const { data: sessionRow, error: fetchErr } = await supabase
+      .from("sessions")
+      .select("theme_hiragana, hint")
+      .eq("id", sessionId)
+      .single();
+
+    if (fetchErr) throw fetchErr;
+    if (!sessionRow) {
+      return res.status(404).json({ success: false, error: "指定されたセッションが存在しません" });
+    }
+
+    if (sessionRow.hint) {
+      return res.status(400).json({ success: false, error: "ヒントは既に追加されています" });
+    }
+
+    const text = sessionRow.theme_hiragana;
+    const chars = [...text.normalize("NFC")];
+    const pos = Math.floor(Math.random() * chars.length);
+    const hintText = `${pos + 1}番目の文字は「${chars[pos]}」です`;
+
+    const { error: updateErr } = await supabase
+      .from("sessions")
+      .update({
+        hintPosition: hintNumber,
+        hint: hintText
+      })
+      .eq("id", sessionId);
+
+    if (updateErr) throw updateErr;
+
+    res.json({
+      success: true,
+      hint: hintText
+    });
+
+  } catch (err) {
+    console.error("add-hint エラー:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // 履歴取得（ページネーション）
@@ -365,10 +399,20 @@ app.get("/get-recent-sessions", async (req, res) => {
   const size = parseInt(req.query.size || "15");
   const after = req.query.after || null;
 
-  const { data, error } = await supabase.rpc("fetch_magic_sessions", { p_limit: size, p_after: after });
+  const { data, error } = await supabase.rpc("fetch_magic_sessions", {
+    p_limit: size,
+    p_after: after
+  });
 
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+
+  const sanitized = data.map((item, index) => {
+    const isLast = index === data.length - 1;
+    const { id, created_at, ...rest } = item;
+    return isLast ? { ...rest, created_at } : rest;
+  });
+
+  res.json(sanitized);
 });
 
 // 人気のお題を取得

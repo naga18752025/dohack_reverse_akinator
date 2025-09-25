@@ -16,6 +16,18 @@ body {
     justify-content: center;
 }
 
+#crow {
+    position: fixed;
+    z-index: 100;
+    width: min(10vh,15vw);
+    filter: drop-shadow(0 0 0.5vh white);
+    top: 50vh;            
+    left: -25vw;          
+    transition: left 5s linear, top 5s linear;
+    transform-origin: center;
+    z-index: 10000;
+}
+
 #account {
     position: absolute;
     top: 1vh;
@@ -110,9 +122,9 @@ body {
 
 #title{
     margin: 3vh 0;
-    width: min(80%, 60vh);
+    width: min(70%, 50vh);
     max-width: 400px;
-    filter: drop-shadow(0.2vh 0.2vh 0.5vh rgba(255, 255, 255, 0.5));;
+    filter: drop-shadow(0.2vh 0.2vh 0.5vh rgba(0, 0, 0, 0.7));;
 }
 
 #owl{
