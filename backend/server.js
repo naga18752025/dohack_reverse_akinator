@@ -21,20 +21,56 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY // ← サーバー用の安全なキー
 );
 
+// OpenAI API 共通呼び出し関数
+async function callOpenAI(prompt, temperature = 0.7, max_tokens = 20) {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4.1",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens,
+      temperature,
+    }),
+  });
+  const data = await res.json();
+  if (!data?.choices?.[0]?.message?.content)
+    throw new Error("OpenAIから不正な応答");
+  return data.choices[0].message.content.trim();
+}
+
+function hasInvalidChars(str) {
+    return /[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\u30FC]/u.test(str);
+}
+
 app.post("/api/openai", async (req, res) => {
   try {
-    const { prompt, info1, info2, info3, Q, temperature } = req.body;
-    let realPrompt = null;
-    console.log(temperature);
+    const { prompt, Q, session_id } = req.body;
 
-    if(prompt === 0){
-      const themeLog = info1;
-
+    // --- 1️⃣ お題生成 & ひらがな変換 & Supabase保存 ---
+    if (prompt === 0) {
+      // ①お題生成
+      let themePrompt = null;
       const rand = Math.random();
       const typeOfPrompt = rand < 0.45 ? 1 : rand < 0.90 ? 2 : 3;
 
+      // 直近30件の correct_answer を取得
+      const { data: recent, error: logErr } = await supabase
+        .from("sessions")
+        .select("correct_answer")
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (logErr) return res.status(500).json({ success: false, error: logErr.message });
+
+      // 「,」区切りの文字列としてプロンプトに渡す
+      const themeLog = recent.map(r => r.correct_answer);
+
       if(typeOfPrompt === 1){
-        realPrompt = `
+        themePrompt = `
         次のカテゴリのうちの1つを、**無作為に選んで**ください。
         そのカテゴリに該当する、日本人の多くが知っている「名詞」を1つだけ思い浮かべてください。（例示しているものである必要はありません）
   
@@ -94,7 +130,7 @@ app.post("/api/openai", async (req, res) => {
         では、実行してください。
         `;
       }else if(typeOfPrompt === 3){
-        realPrompt = `
+        themePrompt = `
         あなたの役割：以下の条件に厳密に従い、"名詞を1語だけ" 出力してください。
         目的：逆アキネーターゲームのお題（日本人の全員に知られているが、お題としては思い浮かびにくい名詞）を**無作為に1つ選ぶ**こと。
         
@@ -130,7 +166,7 @@ app.post("/api/openai", async (req, res) => {
         
         以上の条件に従って、**無作為に1語の名詞（日本人全員が知っているがお題としては思い浮かべにくいやつ）**だけを出力してください。`;
       }else{
-        realPrompt = `
+        themePrompt = `
         あなたの役割：以下の条件に厳密に従い、"名詞を1語だけ" 出力してください。
         目的：逆アキネーターゲームのお題（日本人に広く知られている名詞）を**無作為に1つ選ぶ**こと。
   
@@ -165,13 +201,12 @@ app.post("/api/openai", async (req, res) => {
   
         以上の条件に従って、**無作為に1語の名詞**だけを出力してください。`;
       }
-    }else if(prompt === 0.5){
-      const selectedCharacter = info2;
-      console.log(selectedCharacter);
+      const originalWord = await callOpenAI(themePrompt, 1.5, 20);
 
-      realPrompt = `
-      「${selectedCharacter}」は日本語の名詞です。
-      「${selectedCharacter}」を、ひらがなに変換して出力してください。
+      // ②ひらがな変換
+      const hiraPrompt = `
+      「${originalWord}」は日本語の名詞です。
+      「${originalWord}」を、ひらがなに変換して出力してください。
 
       【制約】
       - 出力は「ひらがなに直した1語」のみ。
@@ -182,13 +217,45 @@ app.post("/api/openai", async (req, res) => {
         - 例：「雷」を「らい」としてはいけません。
       - 出力は変換後の「ひらがなに直した1語」だけ。それ以外の文字・説明・記号は禁止。
       `;
-    }else if(prompt === 1){
-      const selectedCharacter = info2;
-      const question = Q;
-      const count = [...info3.normalize('NFC')].length;
-      realPrompt = `
-      あなたは「${selectedCharacter}」についての質問に答える役割です。
-      「${selectedCharacter}」は平仮名で${count}文字の日本語の名詞です。
+      const hiraWord = await callOpenAI(hiraPrompt, 0, 20);
+
+      if(hasInvalidChars(hiraWord)){
+        return res.status(400).json({ error: "不正なお題" });
+      }
+
+      // ③Supabaseにinsert
+      const { data, error } = await supabase
+        .from("sessions")
+        .insert([
+          { correct_answer: originalWord, theme_hiragana: hiraWord }
+        ])
+        .select("id")     // ←挿入後にidを取得
+        .single();
+
+      if (error) throw error;
+
+      return res.json({
+        success: true,
+        id: data.id
+      });
+    }
+
+    // --- 2️⃣ 質問対応 ---
+    else if (prompt === 1) {
+      // Supabaseからidでお題取得
+      const { data: sessionRow, error } = await supabase
+        .from("sessions")
+        .select("correct_answer, theme_hiragana")
+        .eq("id", session_id)
+        .single();
+      if (error || !sessionRow) throw new Error("該当セッションなし");
+
+      const { correct_answer, theme_hiragana } = sessionRow;
+      const count = [...theme_hiragana.normalize("NFC")].length;
+
+      const questionPrompt = `
+      あなたは「${correct_answer}」についての質問に答える役割です。
+      「${correct_answer}」は平仮名で${count}文字の日本語の名詞です。
 
       以下のルールに厳密に従って、ユーザーからの質問に回答してください：
 
@@ -208,69 +275,77 @@ app.post("/api/openai", async (req, res) => {
       - **漢字での文字数に関する質問には絶対に「わかりません」と答えてください**
       - 特に漢字などの指定なしで文字数に関して質問されたら、**平仮名の文字数で考えてください**
       - **平仮名以外での文字数に関する質問には絶対に「わかりません」と答えてください**
-      - **質問の内容が「${selectedCharacter}」に関係ない場合は、必ず「わかりません」と答えてください**
+      - **質問の内容が「${correct_answer}」に関係ない場合は、必ず「わかりません」と答えてください**
       - 「はい」に近いが色々な種類があるなどの理由で断言できない場合は「たぶんそう」、それの一部分にだけ当てはまる場合は「部分的にそう」と答えてください
       - 「いいえ」に近いが色々な種類があるなどの理由で断言できない場合は「たぶん違う」、全体的に否定的だが一部当てはまる場合は「そうでもない」と答えてください
 
-      ユーザーからの質問：「${question}」
+      ユーザーからの質問：「${Q}」
       `;
-    }else{
-      return res.status(400).json({ success: false, error: "不正なリクエストです" });
+      const answer = await callOpenAI(questionPrompt, 0, 10);
+
+      // 質問と回答を保存
+      const { error: insertError } = await supabase
+        .from("questions")
+        .insert([{
+          session_id: session_id,
+          question: Q,
+          response: answer
+        }]);
+
+      if (insertError) {
+        console.error("質問保存エラー:", insertError);
+      }
+
+      // フロントへ回答を返す
+      return res.json({
+        success: true,
+        answer
+      });
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4.1",
-        messages: [{ role: "user", content: realPrompt }],
-        max_tokens: 10,
-        temperature: temperature,
-        top_p: 1.0,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
-      return res.status(500).json({ success: false, error: "OpenAIから不正な応答が返ってきました" });
+    else {
+      return res.status(400).json({ success: false, error: "不正なリクエスト" });
     }
-
-    res.json({
-      success: true,
-      content: data.choices[0].message.content,
-    });
-  } catch (error) {
-    console.error("APIエラー:", error);
-    res.status(500).json({ success: false, error: error.message });
+  } catch (err) {
+    console.error("APIエラー:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// セッション作成
-app.post("/create-session", async (req, res) => {
-  const { correctAnswer } = req.body;
-  const { data, error } = await supabase
-    .from("sessions")
-    .insert([{ correct_answer: correctAnswer }])
-    .select();
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data[0]);
-});
-
-// セッション更新
+// 最終回答追加
 app.post("/update-session", async (req, res) => {
   const { sessionId, finalGuess, playTime } = req.body;
-  const { error } = await supabase
+
+  // ① final_guess と play_time を更新
+  const { error: updateError } = await supabase
     .from("sessions")
-    .update({ final_guess: finalGuess, play_time: playTime })
+    .update({ final_guess: finalGuess, play_time: playTime, history_permission: true })
     .eq("id", sessionId);
 
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
+  if (updateError) {
+    return res.status(500).json({ error: updateError.message });
+  }
+
+  // ② correct_answer を取得して比較
+  const { data, error: selectError } = await supabase
+    .from("sessions")
+    .select("correct_answer, theme_hiragana, final_guess")
+    .eq("id", sessionId)
+    .single();
+
+  if (selectError) {
+    return res.status(500).json({ error: selectError.message });
+  }
+
+  // ③ 一致しているか判定
+  const isCorrect = (data.final_guess.trim() === data.theme_hiragana.trim());
+
+  // ④ 判定結果を返す
+  res.json({
+    success: true,
+    answer: data.correct_answer,
+    isCorrect
+  });
 });
 
 // ヒント追加
@@ -285,54 +360,15 @@ app.post("/add-hint", async (req, res) => {
   res.json(data);
 });
 
-// 質問追加
-app.post("/add-question", async (req, res) => {
-  const { sessionId, questionText, responseText } = req.body;
-  const { data, error } = await supabase
-    .from("questions")
-    .insert([{ session_id: sessionId, question: questionText, response: responseText }]);
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
-});
-
 // 履歴取得（ページネーション）
 app.get("/get-recent-sessions", async (req, res) => {
   const size = parseInt(req.query.size || "15");
-  const after = req.query.after;
+  const after = req.query.after || null;
 
-  let query = supabase
-    .from("sessions")
-    .select(`
-      id,
-      final_guess,
-      correct_answer,
-      play_time,
-      hintPosition,
-      hint,
-      created_at,
-      questions (
-        question,
-        response
-      )
-    `)
-    .order("created_at", { ascending: false }) // sessions の順
-    .order("created_at", { foreignTable: "questions", ascending: true }); // questions の順
+  const { data, error } = await supabase.rpc("fetch_magic_sessions", { p_limit: size, p_after: after });
 
-  if (after) {
-    query = query.lt("created_at", after);
-  }
-
-  const { data, error } = await query.limit(size);
   if (error) return res.status(500).json({ error: error.message });
-
-  const processed = data.map((session, index) => {
-    if (index === data.length - 1) return session;
-    const { created_at, ...rest } = session; 
-    return rest;
-  });
-
-  res.json(processed);
+  res.json(data);
 });
 
 // 人気のお題を取得

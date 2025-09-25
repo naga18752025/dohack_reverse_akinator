@@ -2,7 +2,6 @@ let loadingTimeout = null;
 
 function startLoading() {
     document.getElementById("loading3").style.display = "flex";
-    // 10秒後に「お待ちください」メッセージを表示
     loadingTimeout = setTimeout(() => {
         document.getElementById("long-loading").style.display = "block";
         document.getElementById("mole-game-container").style.display = "flex";
@@ -10,7 +9,6 @@ function startLoading() {
 }
 
 function stopLoading() {
-    // タイマー解除（途中で終わっても表示されないように）
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
 
@@ -19,92 +17,56 @@ function stopLoading() {
     document.getElementById("mole-game-container").style.display = "none";
 }
 
-let rawTheme = null;
-let theme = null;
 let sessionId = null;
 
 async function fetchTheme(maxRetries = 10, retryInterval = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            console.log(`テーマ取得 試行${attempt}回目`);
-            const { character: theme } = await startGame();
-            if (theme) {
-                console.log("テーマ取得成功:", theme);
-                return theme;
+            console.log(`テーマ決定 試行${attempt}回目`);
+            const result = await startGame();
+            if (result.success) {
+                console.log("テーマ決定成功");
+                return result;
             }
         } catch (err) {
             console.warn(`接続失敗 (${attempt}回目):`, err);
         }
-        // 最終試行でなければ待機
         if (attempt < maxRetries) {
             await new Promise(resolve => setTimeout(resolve, retryInterval));
         }
     }
-    return null; // 全部失敗
-}
-
-async function themeToHiragana(maxRetries = 10, retryInterval = 2000) {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            console.log(`テーマ変換 試行${attempt}回目`);
-            const { character: theme } = await ThemeCheck(rawTheme);
-            if (theme) {
-                console.log("テーマ変換成功:", theme);
-                return theme;
-            }
-        } catch (err) {
-            console.warn(`接続失敗 (${attempt}回目):`, err);
-        }
-        // 最終試行でなければ待機
-        if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, retryInterval));
-        }
-    }
-    return null; // 全部失敗
-}
-
-function hasInvalidChars(str) {
-    // ひらがな・カタカナ・漢字・伸ばし棒以外の文字が含まれているかをチェック
-    return /[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\u30FC]/u.test(str);
+    return null;
 }
 
 async function main() {
-    startLoading(); // ローディング開始
+    startLoading();
 
-    if(localStorage.getItem("reload") === "none"){
+    if (localStorage.getItem("reload") === "none") {
         localStorage.setItem("reload", "done");
-    }else{
+    } else {
         alert("不正な操作を検知しました。");
         window.location.href = "index.html";
         return;
     }
 
-    rawTheme = await fetchTheme(10, 2000); // ←ここでPromiseを「開封」！
-
-    if(hasInvalidChars(rawTheme)){
+    const result = await fetchTheme();
+    if (!result || !result.success) {
         alert("ゲーム開始に失敗しました。もう一度試してください。");
         window.location.href = "index.html";
         return;
     }
 
-    theme = await themeToHiragana(10, 2000);
+    sessionId = result.sessionId;
 
-    if (!theme) {
-        alert("ゲーム開始に失敗しました。もう一度試してください。");
-        window.location.href = "index.html";
-    }else{
-        stopLoading(); // ローディング終了
-        startTimer(); // タイマーを開始
-        try {
-            const session = await createSession(rawTheme);
-            sessionId = session.id;
-            if(localStorage.getItem("id")){
-                const result = await updatePlayCounts(localStorage.getItem("id"));
-                localStorage.setItem("playCount", result.play_count);
-            }
-        } catch {
-        };
-    }
+    stopLoading();
+    startTimer();
+
+    try {
+        if (localStorage.getItem("id")) {
+            const playResult = await updatePlayCounts(localStorage.getItem("id"));
+            localStorage.setItem("playCount", playResult.play_count);
+        }
+    } catch {}
 }
 
 main();
@@ -136,9 +98,10 @@ async function getHint(){
 }
 
 // ゲームの中断
-function gameQuit(){
+async function gameQuit(){
     const result = confirm("本当にゲームを中断しますか？");
     if(result){
+        await updateSession(sessionId, "----", "--:--");
         document.getElementById("loading3").style.display = "flex";
         window.location.href = "index.html";
     }
@@ -146,8 +109,6 @@ function gameQuit(){
 
 // 質問の入力画面を表示する
 function questionFormOpen(){
-
-    // 質問の残り回数があるかを確認
     if(questionNokori < 0){
         return;
     }
@@ -177,19 +138,16 @@ function answerFormClose(){
 function questionAdd(){
     const question = document.getElementById("question-input");
 
-    // 質問が入力されているか確認
     if(question.value === ""){
         alert("質問を入力してください")
         return;
     }
 
-    // 本当にこの質問でいいか確認
     const result = confirm("本当にこの内容で質問しますか？");
     if (!result) {
         return;
     }
 
-    //質問のコメントを作成してコメント欄に追加
     const newComment = document.createElement("div");
     const comment = question.value;
     newComment.textContent = comment;
@@ -202,28 +160,23 @@ function questionAdd(){
     responseAdd();
 }
 
-let questionNokori = 30; // 残り質問可能回数の初期値
+let questionNokori = 30;
 
 // 質問回数を管理
 function questionCounter(){
-
-    // 残りの質問可能回数を減少させる
     document.getElementById("question-remain").textContent = questionNokori;
     questionNokori --;
 
-    // 残り回数がなくなったら質問ボタンの見た目を変更する
     if(questionNokori < 0){
         document.getElementById("question-button").style.backgroundColor = "gray";
         document.getElementById("question-button").textContent = "質問終了";
     }
 }
-//　残り質問可能回数の初期値を設定
+
 questionCounter();
 
 // AIの回答追加の前工程
 function responseAdd(){
-
-    // 考え中の状態のコメントを作成してコメント欄に追加
     const newComment = document.createElement("div");
     const comment = document.createElement("span");
     comment.textContent = "・";
@@ -244,7 +197,7 @@ function responseAdd(){
 
 // AIの回答を実際に追加
 async function questionCheck(){
-    const { answer: response } = await askQuestion(document.getElementById("question-input").value);
+    const { answer: response } = await askQuestion(document.getElementById("question-input").value, sessionId);
     if(response === "通信に失敗しました"){
     }else{
         questionCounter();
@@ -252,14 +205,10 @@ async function questionCheck(){
     const lastComment = document.querySelector("#comments .response:last-child");
     lastComment.innerHTML = "";
     lastComment.textContent = response;
-    const question = document.getElementById("question-input").value;
-    try {
-        await addQuestion(sessionId, question, response);
-    } catch{
-    }
+
     document.getElementById("buttons").style.display = "flex";
     document.getElementById("question-input").value = ""; 
-    addComment(30 - questionNokori - 1); // 質問回数に応じたコメントを追加
+    addComment(30 - questionNokori - 1);
 }
 
 // 解答の決定工程
@@ -270,15 +219,11 @@ async function answerCheck(){
         return;
     }
 
-    // 本当にこの解答でいいのかを確認
     const result = confirm("本当にこの内容で解答しますか？");
     if (!result) {
         return;
     }
 
-    stopTimer(); // タイマーを止める
-
-    // コメント欄の質問とAI回答を非表示にする
     document.querySelectorAll(".question").forEach(Q => {
         Q.style.display = "none";
     })
@@ -289,7 +234,6 @@ async function answerCheck(){
         document.querySelector(".hint").style.display = "none";
     }
 
-    // 解答確認中の画面を作成して表示
     const newComment = document.createElement("div");
     newComment.id = "answer-checking";
     newComment.textContent = "解答確認中";
@@ -303,9 +247,8 @@ async function answerCheck(){
     const comments = document.getElementById("comments");
     comments.style.justifyContent = "center";
     comments.appendChild(newComment);
-    comments.scrollTop = document.getElementById("comments").scrollHeight; // コメント欄の一番下まで移動させる
+    comments.scrollTop = document.getElementById("comments").scrollHeight;
 
-    // 利用者の解答をhtmlに追加しておく
     document.getElementById("checked-answer").textContent = document.getElementById("answer-input").value.trim();
 
     answerFormClose();
@@ -313,23 +256,44 @@ async function answerCheck(){
     document.getElementById("quit").style.display = "none";
     document.getElementById("hint-button").style.display = "none";
 
-    setTimeout(() => {
-        if(theme === document.getElementById("answer-input").value.trim()){
-            correctAnswer();
-        }else{
-            wrongAnswer();
-        };
-    }, 1500);
-
     try {
-        await updateSession(sessionId, document.getElementById("answer-input").value, stopTimer());
-    } catch{
+        const { answer, isCorrect } = await sendAnswerWithRetry(sessionId, answerInput, timerValue, 3);
+
+        document.getElementById("check-answer-text2").textContent = answer;
+
+        setTimeout(() => {
+            if (isCorrect) correctAnswer();
+            else wrongAnswer();
+        }, 1500);
+
+    } catch (err) {
+        alert("解答の送信に失敗しました。");
+        window.location.href = "index.html";
     }
+}
+
+async function sendAnswerWithRetry(sessionId, answerInput, timer, maxRetries = 3) {
+    let attempt = 0;
+    let lastError;
+
+    while (attempt < maxRetries) {
+        try {
+            const { answer, isCorrect } = await updateSession(sessionId, answerInput, timer);
+            return { answer, isCorrect };
+        } catch (err) {
+            lastError = err;
+            attempt++;
+            console.warn(`送信失敗(${attempt}回目)、再試行中...`);
+
+            await new Promise(res => setTimeout(res, 500)); 
+        }
+    }
+
+    throw lastError;
 }
 
 // 解答が正しかった場合
 async function correctAnswer(){
-
     try {
         if(localStorage.getItem("id")){
             const result = await updateCorrectCounts(localStorage.getItem("id"));
@@ -338,14 +302,12 @@ async function correctAnswer(){
     } catch {
     }
 
-    // 解答確認中の画面を非表示にする
     document.getElementById("answer-checking").style.display = "none";
 
     document.getElementById("check-answer-box").style.display = "flex";
     document.getElementById("result").style.display = "flex";
     document.getElementById("SorF").textContent = "🎊大正解🎊";
 
-    // フクロウの状態を正解した時のものにする
     const images = ["images/responser.png", "images/smiler.png"];
     let currentIndex = 1;
     document.getElementById("main-owl").src = images[1];
@@ -357,15 +319,12 @@ async function correctAnswer(){
 
 //解答が間違っていた場合
 function wrongAnswer(){
-
-    // 解答確認中の画面を非表示にする
     document.getElementById("answer-checking").style.display = "none";
 
     document.getElementById("check-answer-box").style.display = "flex";
     document.getElementById("result").style.display = "flex";
     document.getElementById("SorF").textContent = "残念...不正解";
 
-    // フクロウの状態を間違えた時のものにする
     const images = ["images/responser.png", "images/sadder.png"];
     let currentIndex = 1;
     document.getElementById("main-owl").src = images[1];

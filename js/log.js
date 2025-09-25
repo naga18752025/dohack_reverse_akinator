@@ -2,7 +2,6 @@ let loadingTimeout = null;
 
 function startLoading() {
     document.getElementById("loading3").style.display = "flex";
-    // 10秒後に「お待ちください」メッセージを表示
     loadingTimeout = setTimeout(() => {
         document.getElementById("long-loading").style.display = "block";
         document.getElementById("mole-game-container").style.display = "flex";
@@ -10,7 +9,6 @@ function startLoading() {
 }
 
 function stopLoading() {
-    // タイマー解除（途中で終わっても表示されないように）
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
 
@@ -41,21 +39,13 @@ function renderHistory(sessions) {
 
         const sessionInfo = document.createElement("div");
         sessionInfo.classList.add("session-info");
-        if(session.hint){
-            sessionInfo.innerHTML = `
-                <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
-                <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-                <p>質問回数: ${session.questions.length}回<span class="hint">(ヒントを使用)</span></p>
-                <p>終了タイム: ${session.play_time}</p>
-            `;
-        }else{
-            sessionInfo.innerHTML = `
-                <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
-                <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
-                <p>質問回数: ${session.questions.length}回<span class="hint"></span></p>
-                <p>終了タイム: ${session.play_time}</p>
-            `;
-        }
+        const hintText = session.hint ? "(ヒントを使用)" : "";
+        sessionInfo.innerHTML = `
+            <p>ユーザーの解答: <span class="user-answer">${session.final_guess}</span></p>
+            <p>正解: <span class="correct-answer">${session.correct_answer}</span></p>
+            <p>質問回数: ${session.questions.length}回<span class="hint">${hintText}</span></p>
+            <p>終了タイム: ${session.play_time}</p>
+        `;
 
         const questionButton = document.createElement("button");
         questionButton.textContent = "質問を見る";
@@ -107,7 +97,6 @@ function renderHistory2(sessions) {
 
 let firstLoading = true
 
-// 初回読み込み
 async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
 
     if(firstLoading){
@@ -128,7 +117,7 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
                 renderHistory2(sessions2);
                 console.log("履歴取得成功");
                 stopLoading();
-                return; // 成功したら終了
+                return;
             } else {
                 console.warn(`履歴なし (${attempt}回目)`);
             }
@@ -137,7 +126,6 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
             console.error(`履歴取得エラー (${attempt}回目):`, error);
         }
 
-        // 最終試行でなければ待機
         if (attempt < maxRetries) {
             console.log(`${retryInterval}ms 待機して再試行...`);
             await new Promise(resolve => setTimeout(resolve, retryInterval));
@@ -148,7 +136,6 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
     stopLoading();
 }
 
-// 「もっと見る」ボタン処理
 async function loadMoreHistory() {
     startLoading();
     try {
@@ -162,7 +149,6 @@ async function loadMoreHistory() {
 
         log = log.concat(sessions);
         
-        // 最後に取得したセッションの日時を更新
         lastFetchedAt = sessions[sessions.length - 1].created_at;
 
         renderHistory(sessions);
@@ -172,15 +158,7 @@ async function loadMoreHistory() {
         alert("履歴の読み込み中にエラーが発生しました。");
     } finally {
         stopLoading();
-        if(filter === 1) {
-            answer1logFilterOn();
-        }else if(filter === 2){
-            answer0logFilterOn();
-        }else if(filter === 3){
-            hint1logFilterOn();
-        }else if(filter === 4){
-            hint0logFilterOn();
-        }
+        setLogFilter(filter);
     }
 }
 
@@ -204,7 +182,6 @@ function modalOpen(targetId) {
         }
         session.questions.forEach(q => {
 
-            
             const p = document.createElement("p");
             p.innerHTML = `
             Q${order}: ${q.question}<br>
@@ -229,20 +206,12 @@ function modalClose() {
     modal.classList.remove('is-active');
 }
 
-function checkLog(){
-    document.getElementById("log-list").style.display = "flex";
-    document.getElementById("log-list2").style.display = "none";
-    const selection = document.getElementById("selection");
-    selection.children[0].classList.add("active-log");
-    selection.children[1].classList.remove("active-log"); 
-}
-
-function checkLog2(){
-    document.getElementById("log-list").style.display = "none";
-    document.getElementById("log-list2").style.display = "flex";
-    const selection = document.getElementById("selection");
-    selection.children[0].classList.remove("active-log");
-    selection.children[1].classList.add("active-log"); 
+function toggleLog(showFirst = true) {
+    document.getElementById("log-list").style.display  = showFirst ? "flex" : "none";
+    document.getElementById("log-list2").style.display = showFirst ? "none" : "flex";
+    const [first, second] = document.getElementById("selection").children;
+    first.classList.toggle("active-log", showFirst);
+    second.classList.toggle("active-log", !showFirst);
 }
 
 function searchAnswer() {
@@ -269,70 +238,25 @@ function searchAnswer() {
 
 let filter = 0;
 
-function answer1logFilterOn() {
-    logFilterOff();
-    filter = 1;
-    document.getElementById("log-filter").children[0].classList.remove("active-filter");
-    document.getElementById("log-filter").children[1].classList.add("active-filter");
-    const cards = document.querySelectorAll("#log-list .session-card");
+function setLogFilter(type) {
+    filter = type;
 
-    cards.forEach(card => {
-        if (card.querySelector(".user-answer").textContent === "----") {
-            card.classList.add("veiled");
+    const filterTabs = document.getElementById("log-filter").children;
+    document.querySelector(".active-filter")?.classList.remove("active-filter");
+    filterTabs[type].classList.add("active-filter");
+
+    document.querySelectorAll("#log-list .session-card").forEach(card => {
+        const answer = card.querySelector(".user-answer").textContent;
+        const hint   = card.querySelector(".hint").textContent;
+        let hide = false;
+
+        switch (type) {
+            case 1: hide = (answer === "----"); break;
+            case 2: hide = (answer !== "----"); break;
+            case 3: hide = (hint === ""); break;
+            case 4: hide = (hint === "(ヒントを使用)"); break;
         }
-    });
-}
-
-function answer0logFilterOn() {
-    logFilterOff();
-    filter = 2;
-    document.getElementById("log-filter").children[0].classList.remove("active-filter");
-    document.getElementById("log-filter").children[2].classList.add("active-filter");
-    const cards = document.querySelectorAll("#log-list .session-card");
-
-    cards.forEach(card => {
-        if (card.querySelector(".user-answer").textContent !== "----") {
-            card.classList.add("veiled");
-        }
-    });
-}
-
-function hint1logFilterOn() {
-    logFilterOff();
-    filter = 3;
-    document.getElementById("log-filter").children[0].classList.remove("active-filter");
-    document.getElementById("log-filter").children[3].classList.add("active-filter");
-    const cards = document.querySelectorAll("#log-list .session-card");
-
-    cards.forEach(card => {
-        if (card.querySelector(".hint").textContent === "") {
-            card.classList.add("veiled");
-        }
-    });
-}
-
-function hint0logFilterOn() {
-    logFilterOff();
-    filter = 4;
-    document.getElementById("log-filter").children[0].classList.remove("active-filter");
-    document.getElementById("log-filter").children[4].classList.add("active-filter");
-    const cards = document.querySelectorAll("#log-list .session-card");
-
-    cards.forEach(card => {
-        if (card.querySelector(".hint").textContent === "(ヒントを使用)") {
-            card.classList.add("veiled");
-        }
-    });
-}
-
-function logFilterOff() {
-    filter = 0;
-    document.querySelector(".active-filter").classList.remove("active-filter");
-    document.getElementById("log-filter").children[0].classList.add("active-filter");
-    const cards = document.querySelectorAll("#log-list .session-card");
-
-    cards.forEach(card => {
-        card.classList.remove("veiled");
+        card.classList.toggle("veiled", hide);
     });
 }
 
@@ -360,7 +284,6 @@ function updateScrollButton(listId, btnId) {
 
     function update() {
         const scrollTop = list.scrollTop;
-
         if (scrollTop > lastScrollTop) {
             forceHide = false;
         }
@@ -369,7 +292,6 @@ function updateScrollButton(listId, btnId) {
         if (forceHide) return;
 
         btn.style.transform = `translateY(${scrollTop}px)`;
-
         btn.classList.remove("show");
 
         clearTimeout(scrollTimer);
@@ -392,7 +314,6 @@ function updateScrollButton2(listId, btnId) {
 
     function update() {
         const scrollTop = list.scrollTop;
-
         if (scrollTop > lastScrollTop2) {
             forceHide2 = false;
         }
@@ -401,7 +322,6 @@ function updateScrollButton2(listId, btnId) {
         if (forceHide2) return;
 
         btn.style.transform = `translateY(${scrollTop}px)`;
-
         btn.classList.remove("show");
 
         clearTimeout(scrollTimer2);
@@ -432,14 +352,13 @@ function reload(){
     log = [];
     loadCount = 1;
     lastFetchedAt = null;
-    logFilterOff();
+    setLogFilter(0);
     document.getElementById("reload-inner").classList.add("reload-inner");
     loadInitialHistory();
     scrollTopLogList("auto");
     scrollTopLogList2("auto");
 }
 
-// 初回実行
 loadInitialHistory();
 
 function loginCheck(){

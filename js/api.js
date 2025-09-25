@@ -1,67 +1,39 @@
 const BACKEND_URL = "https://dohack-reverse-akinator.onrender.com";
 
-// AIが選んだキャラクターを記憶しておく変数
-let selectedCharacter = null;
-let selectedCharacter2 = null;
-
 /**
- * ゲーム開始：AIにキャラクターを選んでもらう
+ * ゲーム開始：サーバーに新しいお題を作成させる
  */
 async function startGame() {
   try {
-    const sessions = await getRecentSessionsWithQuestions(null, 30);
-    themeLog = sessions.map(session => session.correct_answer);
-  } catch {
-    themeLog = ["猫", "桜"];
-  }
+    const response = await callBackendAPI(0, "", "");
 
-  try {
-    const response = await callBackendAPI(0, themeLog, "", "", "", 1.5);
-
-    if (!response || !response.content) {
-      throw new Error("AIの返答が不正です");
+    if (!response || !response.success || !response.id) {
+      throw new Error("サーバーからの返答が不正です");
     }
 
-    selectedCharacter = response.content.trim();
+    currentSessionId = response.id;
 
-    document.getElementById("check-answer-text2").textContent = selectedCharacter;
-
-    return { success: true, character: selectedCharacter };
+    return { success: true, sessionId: currentSessionId };
   } catch (error) {
     console.error("ゲーム開始でエラー:", error);
-    return { success: false, character: null };
-  }
-}
-
-async function ThemeCheck(){
-  try {
-    const response = await callBackendAPI(0.5, [], selectedCharacter, "",  "", 0);
-
-    if (!response || !response.content) {
-      throw new Error("AIの返答が不正です");
-    }
-
-    selectedCharacter2 = response.content.trim();
-
-    return { success: true, character: selectedCharacter2 };
-  } catch (error) {
-    console.error("ゲーム開始でエラー:", error);
-    return { success: false, character: null };
+    return { success: false, sessionId: null };
   }
 }
 
 /**
  * 質問に対してAIが○×で答える
  * @param {string} question - プレイヤーからの質問
+ * @param {string} sessionId - startGame で取得したセッションID
  */
-async function askQuestion(question) {
-  if (!selectedCharacter) {
-    throw new Error("ゲームが開始されていません");
-  }
-
+async function askQuestion(question, sessionId) {
   try {
-    const response = await callBackendAPI(1, [], selectedCharacter, selectedCharacter2, question, 0.0);
-    return { success: true, answer: response.content.trim() };
+    const response = await callBackendAPI(1, question, sessionId);
+
+    if (!response || !response.success || !response.answer) {
+      throw new Error("サーバーからの返答が不正です");
+    }
+
+    return { success: true, answer: response.answer.trim() };
   } catch (error) {
     console.error("質問でエラー:", error);
     return { success: false, answer: "通信に失敗しました" };
@@ -71,20 +43,17 @@ async function askQuestion(question) {
 /**
  * OpenAI APIを呼び出す共通関数
  * @param {number} prompt - AIに送るメッセージ
- * @param {string[]} info1 - テーマログ
- * @param {string} info2 - 今回のテーマ
- * @param {string} info3 - 今回のテーマ(ひらがな)
  * @param {string} Q - プレイヤーからの質問
- * @param {number} temperature
+ * @param {string} session_id
  */
-async function callBackendAPI(prompt, info1, info2, info3, Q, temperature = 0.7) {
+async function callBackendAPI(prompt, Q, session_id) {
   // fetch()でAPIにリクエストを送信
   const response = await fetch(BACKEND_URL + "/api/openai", {
     method: "POST", // POSTメソッドでデータを送信
     headers: {
       "Content-Type": "application/json", // JSONデータを送ることを明示
     },
-    body: JSON.stringify({ prompt, info1, info2, info3, Q, temperature }), // リクエストボディにJSON形式でデータを設定
+    body: JSON.stringify({ prompt, Q, session_id }), // リクエストボディにJSON形式でデータを設定
   });
 
   // レスポンスが成功かチェック
@@ -97,6 +66,5 @@ async function callBackendAPI(prompt, info1, info2, info3, Q, temperature = 0.7)
   if (!data.success) {
     throw new Error(data.error);
   }
-  return data; // { success: true, content: "回答" }
-  // ここまでがAPIの呼び出し部分
+  return data;
 }
