@@ -21,6 +21,23 @@
     align-items: center;
 }
 
+#reset-loading{
+    position: absolute;
+    top:5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: red;
+    border: none;
+    border-radius: 0.25vh;
+    padding: 0.5vh 1vw;
+    color: white;
+    font-size: min(2.0vh, 3.0vw);
+    box-shadow: 
+        0 0.5vh 0.5vh rgba(0,0,0,0.9),     /* 外側の影 */
+        inset 0 0.25vh 0.25vh rgba(255,255,255,0.9); /* 内側の光 */
+    z-index: 10000;
+}
+
 #long-loading{
     position: absolute;
     top: 40%;
