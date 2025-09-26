@@ -76,6 +76,9 @@ async function updateStatus() {
         if (playCount > 0) {
             const accuracy = Math.round((correctCount / playCount) * 1000) / 10;
             document.getElementById("correct-rate").textContent = accuracy;
+        }else{
+            const accuracy = 0;
+            document.getElementById("correct-rate").textContent = accuracy;
         }
     
         updateLevel(correctCount);
