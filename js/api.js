@@ -3,9 +3,9 @@ const BACKEND_URL = "https://dohack-reverse-akinator.onrender.com";
 /**
  * ゲーム開始：サーバーに新しいお題を作成させる
  */
-async function startGame() {
+async function startGame(userId) {
   try {
-    const response = await callBackendAPI(0, "", "");
+    const response = await callBackendAPI(0, "", "", userId);
 
     if (!response || !response.success || !response.id) {
       throw new Error("サーバーからの返答が不正です");
@@ -27,7 +27,7 @@ async function startGame() {
  */
 async function askQuestion(question, sessionId) {
   try {
-    const response = await callBackendAPI(1, question, sessionId);
+    const response = await callBackendAPI(1, question, sessionId, null);
 
     if (!response || !response.success || !response.answer) {
       throw new Error("サーバーからの返答が不正です");
@@ -45,15 +45,16 @@ async function askQuestion(question, sessionId) {
  * @param {number} prompt - AIに送るメッセージ
  * @param {string} Q - プレイヤーからの質問
  * @param {string} session_id
+ * @param {string} userId
  */
-async function callBackendAPI(prompt, Q, session_id) {
+async function callBackendAPI(prompt, Q, session_id, userId) {
   // fetch()でAPIにリクエストを送信
   const response = await fetch(BACKEND_URL + "/api/openai", {
     method: "POST", // POSTメソッドでデータを送信
     headers: {
       "Content-Type": "application/json", // JSONデータを送ることを明示
     },
-    body: JSON.stringify({ prompt, Q, session_id }), // リクエストボディにJSON形式でデータを設定
+    body: JSON.stringify({ prompt, Q, session_id, userId }), // リクエストボディにJSON形式でデータを設定
   });
 
   // レスポンスが成功かチェック

@@ -23,7 +23,7 @@ async function fetchTheme(maxRetries = 10, retryInterval = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             console.log(`テーマ決定 試行${attempt}回目`);
-            const result = await startGame();
+            const result = await startGame(localStorage.getItem("id"));
             if (result.success) {
                 console.log("テーマ決定成功");
                 return result;
@@ -60,13 +60,6 @@ async function main() {
 
     stopLoading();
     startTimer();
-
-    try {
-        if (localStorage.getItem("id")) {
-            const playResult = await updatePlayCounts(localStorage.getItem("id"));
-            localStorage.setItem("playCount", playResult.play_count);
-        }
-    } catch {}
 }
 
 main();
@@ -124,7 +117,7 @@ async function gameQuit(){
     if(result){
         startLoading();
         try {
-            await updateSession(sessionId, "----", "中断");
+            await updateSession(sessionId, "----", "中断", localStorage.getItem("id"));
         } catch {
         }
         sessionId = null;
@@ -287,8 +280,7 @@ async function answerCheck(){
         document.getElementById("check-answer-text2").textContent = answer;
 
         setTimeout(() => {
-            if (isCorrect) correctAnswer();
-            else wrongAnswer();
+            showAnswerResult(isCorrect);
         }, 1500);
 
     } catch (err) {
@@ -303,7 +295,7 @@ async function sendAnswerWithRetry(sessionId, answerInput, timer, maxRetries = 3
 
     while (attempt < maxRetries) {
         try {
-            const { answer, isCorrect } = await updateSession(sessionId, answerInput, timer);
+            const { answer, isCorrect } = await updateSession(sessionId, answerInput, timer, localStorage.getItem("id"));
             sessionId = null;
             return { answer, isCorrect };
         } catch (err) {
@@ -318,49 +310,30 @@ async function sendAnswerWithRetry(sessionId, answerInput, timer, maxRetries = 3
     throw lastError;
 }
 
-// 解答が正しかった場合
-async function correctAnswer(){
-    try {
-        if(localStorage.getItem("id")){
-            const result = await updateCorrectCounts(localStorage.getItem("id"));
-            localStorage.setItem("correctCount", result.correct_count);
-        }
-    } catch {
+function showAnswerResult(isCorrect) {
+    document.getElementById("answer-checking").style.display = "none";
+    document.getElementById("check-answer-box").style.display = "flex";
+    document.getElementById("result").style.display = "flex";
+
+    const text = isCorrect ? "🎊大正解🎊" : "残念...不正解";
+    const images = isCorrect
+        ? ["images/responser.png", "images/smiler.png"]
+        : ["images/responser.png", "images/sadder.png"];
+
+    document.getElementById("SorF").textContent = text;
+
+    let currentIndex = 1;
+    const mainOwl = document.getElementById("main-owl");
+    mainOwl.src = images[1];
+
+    const intervalId = setInterval(() => {
+        currentIndex = (currentIndex + 1) % images.length;
+        mainOwl.src = images[currentIndex];
+    }, 1500);
+
+    if (!isCorrect) {
+        setTimeout(() => clearInterval(intervalId), 6000);
     }
-
-    document.getElementById("answer-checking").style.display = "none";
-
-    document.getElementById("check-answer-box").style.display = "flex";
-    document.getElementById("result").style.display = "flex";
-    document.getElementById("SorF").textContent = "🎊大正解🎊";
-
-    const images = ["images/responser.png", "images/smiler.png"];
-    let currentIndex = 1;
-    document.getElementById("main-owl").src = images[1];
-    setInterval(() => {
-        currentIndex = (currentIndex + 1) % images.length; 
-        document.getElementById("main-owl").src = images[currentIndex];
-    }, 1500);
-}
-
-//解答が間違っていた場合
-function wrongAnswer(){
-    document.getElementById("answer-checking").style.display = "none";
-
-    document.getElementById("check-answer-box").style.display = "flex";
-    document.getElementById("result").style.display = "flex";
-    document.getElementById("SorF").textContent = "残念...不正解";
-
-    const images = ["images/responser.png", "images/sadder.png"];
-    let currentIndex = 1;
-    document.getElementById("main-owl").src = images[1];
-    const Interval = setInterval(() => {
-        currentIndex = (currentIndex + 1) % images.length; 
-        document.getElementById("main-owl").src = images[currentIndex];
-    }, 1500);
-    setTimeout(() => {
-        clearInterval(Interval);
-    }, 6000);
 }
 
 function finishGame(){

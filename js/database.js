@@ -1,10 +1,10 @@
 const API_URL = "https://dohack-reverse-akinator.onrender.com";
 
-async function updateSession(sessionId, finalGuess, playTime) {
+async function updateSession(sessionId, finalGuess, playTime, userId) {
   const res = await fetch(`${API_URL}/update-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId, finalGuess, playTime })
+    body: JSON.stringify({ sessionId, finalGuess, playTime, userId })
   });
   if (!res.ok) return null;
   return await res.json();
@@ -78,39 +78,18 @@ async function signIn(user_name, password) {
   const result = await res.json();
 
   if (!res.ok) {
-    throw result.error; // サーバーの error メッセージを throw
-  }
-  return result;
-}
-
-async function updatePlayCounts(userId) {
-  const res = await fetch(`${API_URL}/increment-play-count`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId })
-  });
-
-  const result = await res.json();
-
-  if (!res.ok) {
     throw result.error;
   }
   return result;
 }
 
-async function updateCorrectCounts(userId) {
-  const res = await fetch(`${API_URL}/increment-correct-count`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId })
+async function fetchAccountStats(userId) {
+  const res = await fetch(`${API_URL}/account-stats/${userId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
   });
-
-  const result = await res.json();
-
-  if (!res.ok) {
-    throw result.error;
-  }
-  return result;
+  if (!res.ok) return null;
+  return await res.json();
 }
 
 async function updateUsername(userId, new_user_name) {

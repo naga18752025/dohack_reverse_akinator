@@ -2,7 +2,6 @@ let loadingTimeout = null;
 
 function startLoading() {
     document.getElementById("loading3").style.display = "flex";
-    // 10秒後に「お待ちください」メッセージを表示
     loadingTimeout = setTimeout(() => {
         document.getElementById("long-loading").style.display = "block";
         document.getElementById("mole-game-container").style.display = "flex";
@@ -10,7 +9,6 @@ function startLoading() {
 }
 
 function stopLoading() {
-    // タイマー解除（途中で終わっても表示されないように）
     clearTimeout(loadingTimeout);
     loadingTimeout = null;
 
@@ -19,12 +17,12 @@ function stopLoading() {
     document.getElementById("mole-game-container").style.display = "none";
 }
 
-function accountCheck(){
-    if(localStorage.getItem("account")){
+async function accountCheck(){
+    if(localStorage.getItem("account") && localStorage.getItem("id")){
         document.getElementById("no-account").style.display = "none";
         document.getElementById("has-account").style.display = "flex";
         document.getElementById("user-name").textContent = localStorage.getItem("account");
-        updateStatus();
+        await updateStatus();
     }
 }
 
@@ -60,40 +58,49 @@ function toSetting(){
     document.getElementById("signout-button").style.display = "none";
 }
 
-function updateStatus(){
-    const playCount = parseInt(localStorage.getItem("playCount"));
-    const correctCount = parseInt(localStorage.getItem("correctCount"));
-    document.getElementById("play-count").textContent = playCount;
-    document.getElementById("correct-count").textContent = correctCount;
-    if(playCount > 0){
-        const accuracy = Math.round((correctCount / playCount) * 1000) / 10;
-        document.getElementById("correct-rate").textContent = accuracy;
+async function updateStatus() {
+    const id = localStorage.getItem("id");
+    try {
+        const stats = await retryOperation(() => fetchAccountStats(id));
+        if (!stats || !stats.success) {
+            alert("アカウント情報を取得できませんでした");
+            updateLevel(null);
+            return;
+        }
+        const playCount = parseInt(stats.play_count);
+        const correctCount = parseInt(stats.correct_count);
+    
+        document.getElementById("play-count").textContent = playCount;
+        document.getElementById("correct-count").textContent = correctCount;
+    
+        if (playCount > 0) {
+            const accuracy = Math.round((correctCount / playCount) * 1000) / 10;
+            document.getElementById("correct-rate").textContent = accuracy;
+        }
+    
+        updateLevel(correctCount);
+    } catch {
+        alert("アカウント情報を取得できませんでした");
+        updateLevel(null);
     }
-    updateLevel();
+
 }
 
-function updateLevel(){
-    if(parseInt(localStorage.getItem("correctCount")) <= 2){
-        document.getElementById("level").textContent = "Lv.1 見習い質問者";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 4){
-        document.getElementById("level").textContent = "Lv.2 ひよっこ推理家";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 9){
-        document.getElementById("level").textContent = "Lv.3 質問の旅人";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 19){
-        document.getElementById("level").textContent = "Lv.4 ワードハンター";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 34){
-        document.getElementById("level").textContent = "Lv.5 語彙の探偵";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 49){
-        document.getElementById("level").textContent = "Lv.6 言葉のスナイパー";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 74){
-        document.getElementById("level").textContent = "Lv.7 推理の達人";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 99){
-        document.getElementById("level").textContent = "Lv.8 究極の質問者";
-    }else if(parseInt(localStorage.getItem("correctCount")) <= 149){
-        document.getElementById("level").textContent = "Lv.9 言葉の探究王";
-    }else if(parseInt(localStorage.getItem("correctCount")) >= 150){
-        document.getElementById("level").textContent = "Lv.10 逆アキネーター超越者";
-    }
+function updateLevel(correctCount) {
+    const levelEl = document.getElementById("level");
+    const c = parseInt(correctCount);
+
+    if (c <= 2)      levelEl.textContent = "Lv.1 見習い質問者";
+    else if (c <= 4)  levelEl.textContent = "Lv.2 ひよっこ推理家";
+    else if (c <= 9)  levelEl.textContent = "Lv.3 質問の旅人";
+    else if (c <= 19) levelEl.textContent = "Lv.4 ワードハンター";
+    else if (c <= 34) levelEl.textContent = "Lv.5 語彙の探偵";
+    else if (c <= 49) levelEl.textContent = "Lv.6 言葉のスナイパー";
+    else if (c <= 74) levelEl.textContent = "Lv.7 推理の達人";
+    else if (c <= 99) levelEl.textContent = "Lv.8 究極の質問者";
+    else if (c <= 149)levelEl.textContent = "Lv.9 言葉の探究王";
+    else if (c >= 150) levelEl.textContent = "Lv.10 逆アキネーター超越者";
+    else              levelEl.textContent = "情報取得失敗";
 }
 
 // 汎用リトライ関数
@@ -124,8 +131,6 @@ async function checkSignIn(){
             const result = await retryOperation(() => signIn(name, pass));
             localStorage.setItem("id", result.id);
             localStorage.setItem("account", result.user_name);
-            localStorage.setItem("playCount", result.play_count);
-            localStorage.setItem("correctCount", result.correct_count);
             window.location.reload();
         } catch(error) {
             if(error === "不正"){
@@ -154,8 +159,6 @@ async function checkSignUp(){
             const result = await retryOperation(() => signUp(name, pass));
             localStorage.setItem("id", result.id);
             localStorage.setItem("account", result.user_name);
-            localStorage.setItem("playCount", result.play_count);
-            localStorage.setItem("correctCount", result.correct_count);
             window.location.reload();
         } catch(error) {
             if(error === "使用済"){
@@ -174,8 +177,6 @@ function signOut(){
         startLoading();
         localStorage.removeItem("id");
         localStorage.removeItem("account");
-        localStorage.removeItem("playCount");
-        localStorage.removeItem("correctCount");
         window.location.reload();
     }
 }
@@ -243,8 +244,6 @@ async function deleteAccountOrNot(){
                 await retryOperation(() => deleteAccount(localStorage.getItem("id")));
                 localStorage.removeItem("id");
                 localStorage.removeItem("account");
-                localStorage.removeItem("playCount");
-                localStorage.removeItem("correctCount");
                 alert("アカウントを削除しました。");
                 window.location.reload();
             } catch (error) {

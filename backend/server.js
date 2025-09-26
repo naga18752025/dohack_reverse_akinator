@@ -275,7 +275,7 @@ async function insertQuestion(sessionId, question, response) {
 // AI使うやつ
 app.post("/api/openai", async (req, res) => {
   try {
-    const { prompt, Q, session_id } = req.body;
+    const { prompt, Q, session_id, userId } = req.body;
 
     // --- 1️⃣ お題生成 & ひらがな変換 & 保存 ---
     if (prompt === 0) {
@@ -294,6 +294,25 @@ app.post("/api/openai", async (req, res) => {
       }
 
       const sessionId = await insertSession(originalWord, hiraWord);
+
+      if (userId) {
+        try {
+          const { data: user } = await supabase
+            .from("account")
+            .select("play_count")
+            .eq("id", userId)
+            .maybeSingle();
+
+          if (user) {
+            const newPlayCount = (parseInt(user.play_count) || 0) + 1;
+            await supabase
+              .from("account")
+              .update({ play_count: newPlayCount })
+              .eq("id", userId);
+          }
+        } catch {
+        }
+      }
 
       return res.json({ success: true, id: sessionId });
     }
@@ -328,7 +347,7 @@ app.post("/api/openai", async (req, res) => {
 
 // 最終回答追加
 app.post("/update-session", async (req, res) => {
-  const { sessionId, finalGuess, playTime } = req.body;
+  const { sessionId, finalGuess, playTime, userId } = req.body;
 
   // ① final_guess と play_time を更新
   const { error: updateError } = await supabase
@@ -354,7 +373,28 @@ app.post("/update-session", async (req, res) => {
   // ③ 一致しているか判定
   const isCorrect = (data.final_guess.trim() === data.theme_hiragana.trim());
 
-  // ④ 判定結果を返す
+  // ④ 正解ならアカウント操作
+  if (isCorrect && userId) {
+    (async () => {
+      try {
+        const { data: user, error: fetchError } = await supabase
+          .from("account")
+          .select("correct_count")
+          .eq("id", userId)
+          .maybeSingle();
+        if (fetchError || !user) return;
+
+        const newCorrectCount = (parseInt(user.correct_count) || 0) + 1;
+        await supabase
+          .from("account")
+          .update({ correct_count: newCorrectCount })
+          .eq("id", userId);
+      } catch {
+      }
+    })();
+  }
+
+  // ⑤ 判定結果を返す
   res.json({
     success: true,
     answer: data.correct_answer,
@@ -477,7 +517,7 @@ app.post("/create-account", async (req, res) => {
       return res.status(500).json({ error: "登録エラー" });
     }
 
-    res.json({ id: user.id, user_name: user.user_name, play_count: user.play_count, correct_count: user.correct_count });
+    res.json({ id: user.id, user_name: user.user_name });
 
   } catch (err) {
     res.status(500).json({ error: "登録エラー" });
@@ -496,7 +536,7 @@ app.post("/login", async (req, res) => {
   // ユーザー取得
   const { data: user, error: selectError } = await supabase
     .from("account")
-    .select("id, user_name, password, play_count, correct_count")
+    .select("id, user_name, password")
     .eq("user_name", user_name)
     .maybeSingle();
 
@@ -517,74 +557,40 @@ app.post("/login", async (req, res) => {
     }
 
     // 認証成功
-    res.json({ id: user.id, user_name: user.user_name, play_count: user.play_count, correct_count: user.correct_count });
+    res.json({ id: user.id, user_name: user.user_name });
 
   } catch (err) {
     res.status(500).json({ error: "認証エラー" });
   }
 });
 
-// プレイ回数を1増やす
-app.post("/increment-play-count", async (req, res) => {
-  const { userId } = req.body;
-  if (!userId) return res.status(400).json({ error: "userId は必須です" });
-
+// アカウント情報取得
+app.get("/account-stats/:userId", async (req, res) => {
   try {
-    const { data: user, error: fetchError } = await supabase
+    const { userId } = req.params;
+
+    const { data, error } = await supabase
       .from("account")
-      .select("play_count")
+      .select("play_count, correct_count")
       .eq("id", userId)
       .maybeSingle();
 
-    if (fetchError) return res.status(500).json({ error: fetchError.message });
-    if (!user) return res.status(404).json({ error: "更新エラー" });
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+    if (!data) {
+      return res.status(404).json({ success: false, error: "ユーザーが見つかりません" });
+    }
 
-    const newPlayCount = (parseInt(user.play_count) || 0) + 1;
-
-    const { data, error: updateError } = await supabase
-      .from("account")
-      .update({ play_count: newPlayCount })
-      .eq("id", userId)
-      .select()
-      .single();
-
-    if (updateError) return res.status(500).json({ error: "更新エラー"});
-    res.json(data);
+    res.json({
+      success: true,
+      play_count: data.play_count,
+      correct_count: data.correct_count
+    });
 
   } catch (err) {
-    res.status(500).json({ error: "更新エラー " });
-  }
-});
-
-// 正解回数を1増やす
-app.post("/increment-correct-count", async (req, res) => {
-  const { userId } = req.body;
-  if (!userId) return res.status(400).json({ error: "userId は必須です" });
-
-  try {
-    const { data: user, error: fetchError } = await supabase
-      .from("account")
-      .select("correct_count")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (fetchError) return res.status(500).json({ error: fetchError.message });
-    if (!user) return res.status(404).json({ error: "更新エラー" });
-
-    const newCorrectCount = (parseInt(user.correct_count) || 0) + 1;
-
-    const { data, error: updateError } = await supabase
-      .from("account")
-      .update({ correct_count: newCorrectCount })
-      .eq("id", userId)
-      .select()
-      .single();
-
-    if (updateError) return res.status(500).json({ error: "更新エラー" });
-    res.json(data);
-
-  } catch (err) {
-    res.status(500).json({ error: "更新エラー " });
+    console.error("account-stats エラー:", err);
+    res.status(500).json({ success: false, error: "サーバーエラー" });
   }
 });
 
