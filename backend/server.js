@@ -197,7 +197,7 @@ function createPrompt(type, log, theme, hira, question){
     以下のルールに厳密に従って、ユーザーからの質問に回答してください：
 
     【回答形式】
-    - 回答は次のいずれかの単語のみで行ってください（それ以外は絶対に書かないこと）：
+    - 回答は次のいずれかの単語のみで行ってください（**これ以外は絶対に書かないこと**）：
       「はい」「いいえ」「たぶんそう」「部分的にそう」「たぶん違う」「そうでもない」「わかりません」
 
     【ルール】
@@ -213,10 +213,15 @@ function createPrompt(type, log, theme, hira, question){
     - 特に漢字などの指定なしで文字数に関して質問されたら、**平仮名の文字数で考えてください**
     - **平仮名以外での文字数に関する質問には絶対に「わかりません」と答えてください**
     - **質問の内容が「${theme}」に関係ない場合は、必ず「わかりません」と答えてください**
+    - 質問が2文以上の場合には絶対に「わかりません」と答えてください
     - 「はい」に近いが色々な種類があるなどの理由で断言できない場合は「たぶんそう」、それの一部分にだけ当てはまる場合は「部分的にそう」と答えてください
     - 「いいえ」に近いが色々な種類があるなどの理由で断言できない場合は「たぶん違う」、全体的に否定的だが一部当てはまる場合は「そうでもない」と答えてください
 
-    ユーザーからの質問：「${question}」
+
+    【ユーザーからの質問】
+    \`\`\`
+    ${question}
+    \`\`\`
     `;
   }
 
@@ -225,6 +230,23 @@ function createPrompt(type, log, theme, hira, question){
 
 function hasInvalidChars(str) {
     return /[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\u30FC]/u.test(str);
+}
+
+// --- 入力サニタイズ ---
+function escapeForPrompt(str) {
+  return str
+    .slice(0, 100)                           // 長さ制限
+    .replace(/[\p{C}\p{Zl}\p{Zp}]/gu, ' ')          // 制御文字・不可視スペースをスペース化
+    .replace(/\\/g, '\\\\')                        // バックスラッシュ
+    .replace(/`/g, '\\`')                           // バッククォート
+    .replace(/\$/g, '\\$')                          // $
+    .replace(/\r?\n/g, ' ')                         // 改行→スペース
+    .trim();
+}
+
+function validateAnswer(ans) {
+  const allow = /^(はい|いいえ|たぶんそう|部分的にそう|たぶん違う|そうでもない|わかりません)$/u;
+  return allow.test(ans) ? ans : null;
 }
 
 // 直近 N 件の correct_answer を取得
@@ -323,11 +345,17 @@ app.post("/api/openai", async (req, res) => {
       const { correct_answer, theme_hiragana } = sessionRow;
       const count = [...theme_hiragana.normalize("NFC")].length;
 
-      const questionPrompt = createPrompt(5, null, correct_answer, count, Q);
+      const safeQustion = escapeForPrompt(Q)
+      const questionPrompt = createPrompt(5, null, correct_answer, count, safeQustion);
       const answer = await callOpenAI(questionPrompt, 0, 10);
+      const checkedAnswer = validateAnswer(answer.trim());
+
+      if (checkedAnswer == null) {
+        return res.status(400).json({ success: false, error: '不正回答' });
+      }
 
       try {
-        await insertQuestion(session_id, Q, answer);
+        await insertQuestion(session_id, Q, checkedAnswer);
       } catch (err) {
         console.error("質問保存エラー:", err);
       }
