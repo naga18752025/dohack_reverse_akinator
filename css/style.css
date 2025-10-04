@@ -190,12 +190,11 @@ body {
 
 #start-button{
     font-size: min(3.5vh, 6vw);
-    margin: 1.5vh 0;
+    margin: 3vh 0;
     background-color: rgb(255, 254, 221);
     border: none;
     border-radius: 1vh;
     padding: 0.5vh min(10vw, 10vh);
-
     box-shadow: 0 0.5vh 1vh black;
 }
 
