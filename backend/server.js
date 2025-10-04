@@ -592,6 +592,24 @@ app.post("/login", async (req, res) => {
   }
 });
 
+function updateLevel(correctCount) {
+    let level = null;
+    const c = parseInt(correctCount);
+
+    if (c <= 2)      level = "Lv.1 見習い質問者";
+    else if (c <= 4)  level = "Lv.2 ひよっこ推理家";
+    else if (c <= 9)  level = "Lv.3 質問の旅人";
+    else if (c <= 19) level = "Lv.4 ワードハンター";
+    else if (c <= 29) level = "Lv.5 語彙の探偵";
+    else if (c <= 39) level = "Lv.6 言葉のスナイパー";
+    else if (c <= 59) level = "Lv.7 推理の達人";
+    else if (c <= 79) level = "Lv.8 究極の質問者";
+    else if (c <= 99)level = "Lv.9 言葉の探究王";
+    else if (c >= 100) level = "Lv.10 逆アキネーター超越者";
+
+    return level;
+}
+
 // アカウント情報取得
 app.get("/account-stats/:userId", async (req, res) => {
   try {
@@ -599,7 +617,7 @@ app.get("/account-stats/:userId", async (req, res) => {
 
     const { data, error } = await supabase
       .from("account")
-      .select("play_count, correct_count")
+      .select("play_count, correct_count, display_permission, accuracy_display_permission")
       .eq("id", userId)
       .maybeSingle();
 
@@ -612,13 +630,100 @@ app.get("/account-stats/:userId", async (req, res) => {
 
     res.json({
       success: true,
+      level: updateLevel(data.correct_count),
       play_count: data.play_count,
-      correct_count: data.correct_count
+      correct_count: data.correct_count,
+      display_permission: data.display_permission,
+      accuracy_display_permission: data.accuracy_display_permission
     });
 
   } catch (err) {
     console.error("account-stats エラー:", err);
     res.status(500).json({ success: false, error: "サーバーエラー" });
+  }
+});
+
+
+// ランキング情報取得
+app.get("/account-ranking", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("account")
+      .select("user_name, play_count, correct_count, accuracy_display_permission")
+      .eq("display_permission", true)
+      .limit(100)
+      .order("correct_count", { ascending: false })
+      .order("play_count", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+    if (!data || data.length === 0) {
+      return res.status(404).json({ success: false, error: "ユーザーが見つかりません" });
+    }
+
+    // 各ユーザーに正答率とレベルを付与
+    const rankingWithLevels = data.map(user => {
+      const play = user.play_count || 0;
+      const correct = user.correct_count || 0;
+      const rate = play > 0 ? correct / play : 0;
+
+      // 非公開フラグのチェック
+      const userName  = user.user_name;
+      const accuracy  = user.accuracy_display_permission  ? Math.round(rate * 1000) / 10 : "非公開";
+
+      return {
+        user_name: userName,
+        accuracy: accuracy,
+        level: updateLevel(correct)
+      };
+    });
+
+    res.json({
+      success: true,
+      ranking: rankingWithLevels
+    });
+
+  } catch (err) {
+    console.error("account-ranking エラー:", err);
+    res.status(500).json({ success: false, error: "サーバーエラー" });
+  }
+});
+
+// ランキング設定更新
+app.post("/update-ranking-setting", async (req, res) => {
+  const { userId, newPolicy } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId は必須です" });
+  if (!newPolicy) return res.status(400).json({ error: "newPolicy は必須です" });
+  
+  let permission1 = null;
+  let permission2 = null;
+  if(newPolicy === "none"){
+    permission1 = false;
+    permission2 = false;
+  }else if(newPolicy === "name"){
+    permission1 = true;
+    permission2 = false;
+  }else if(newPolicy === "accuracy"){
+    permission1 = true;
+    permission2 = true;
+  }else{
+    return res.status(400).json({ error: "不正" });
+  }
+
+  try {
+    const { data, error: updateError } = await supabase
+      .from("account")
+      .update({ display_permission: permission1, accuracy_display_permission: permission2 })
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (updateError) return res.status(500).json({ error: "更新エラー"});
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "更新エラー " });
   }
 });
 

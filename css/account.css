@@ -92,7 +92,7 @@ body {
     text-align: center;
 }
 
-label{
+.input{
     width: 80%;
     font-size: min(2.0vh, 2.5vw);
     margin: 1vh 0;
@@ -144,7 +144,7 @@ label{
     border: none;
     border-radius: 0.5vh;
     padding: 0.5vh 3vw;
-    margin: 4vh 0 1vh 0;
+    margin: 2vh 0 1vh 0;
 }
 
 #user-status, #user-setting{
@@ -154,10 +154,60 @@ label{
     background-color: #ffffff;
     width: 80%;
     padding: 2vh 0;
-    margin: 1vh 0 4vh 0;
+    margin: 1vh 0 3vh 0;
     border: none;
     border-radius: 1vh;
     gap: 2vh;
+}
+
+#permissions{
+    position: relative;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #676767 0.1vh solid;
+    border-radius: 0.5vh;
+    padding: 1vh 0.5vw;
+    background-color: #fffff1;
+}
+
+#permissions::after {
+    content: "";
+    position: absolute;
+    border: none;
+    border-radius: 0.25vh;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(0.25vh);
+    -webkit-backdrop-filter: blur(0.25vh);
+    pointer-events: auto;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+#permissions.show::after {
+    pointer-events: none;
+    opacity: 0;
+}
+
+.switch {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.4em;
+    font-size: min(1.5vh, 2.5vw);
+}
+
+#permission-button{
+    margin-top: 0.5vh;
+    color: rgb(79, 79, 79);
+    font-size: min(1.5vh, 2.5vw);
+    padding: 0.25vh 1vw;
+    background-color: rgb(238, 255, 0);
+    border: solid 0.0125vh black;
+    border-radius: 0.25vh;
 }
 
 #new-username-input, #new-password-input{
@@ -197,7 +247,6 @@ label{
     border: none;
     border-radius: 0.5vh;
     padding: 0.5vh 3vw;
-    margin: 4vh 0;
 }
 
 #top-back {

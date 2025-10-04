@@ -190,7 +190,7 @@ body {
 
 #start-button{
     font-size: min(3.5vh, 6vw);
-    margin-top: 5vh;
+    margin: 1.5vh 0;
     background-color: rgb(255, 254, 221);
     border: none;
     border-radius: 1vh;
@@ -199,20 +199,40 @@ body {
     box-shadow: 0 0.5vh 1vh black;
 }
 
+#buttons{
+    display: flex;
+    justify-content: center;
+    justify-content: space-between;
+    width: min(60%, 40vh);
+    height: auto;
+}
+
 #log-button{
+    width: 47%;
     font-size: min(2.5vh, 4vw);
-    margin-top: 3vh;
-    margin-bottom: 10vh;
+    margin: 1.5vh 0;
+    background-color: rgb(255, 152, 49);
+    border: none;
+    border-radius: 1vh;
+    padding: 0.5vh 0;
+    box-shadow: 0 0.5vh 1vh black;
+}
+
+#ranking-button{
+    width: 47%;
+    font-size: min(2.5vh, 4vw);
+    margin: 1.5vh 0;
     background-color: rgb(255, 231, 49);
     border: none;
     border-radius: 1vh;
-    padding: 0.5vh 3vw;
+    padding: 0.5vh 0;
     box-shadow: 0 0.5vh 1vh black;
 }
 
 #account-button{
     font-size: min(2.0vh, 3.0vw);
     background-color: rgb(255, 255, 255);
+    margin-top: 1.5vh;
     border: none;
     border-radius: 1vh;
     padding: 0.5vh 3vw;

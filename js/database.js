@@ -92,6 +92,30 @@ async function fetchAccountStats(userId) {
   return await res.json();
 }
 
+async function fetchAccountRanking() {
+  const res = await fetch(`${API_URL}/account-ranking`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  });
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+async function updateRankingSetting(userId, newPolicy) {
+  const res = await fetch(`${API_URL}/update-ranking-setting`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, newPolicy})
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw result.error;
+  }
+  return result;
+}
+
 async function updateUsername(userId, new_user_name) {
   const res = await fetch(`${API_URL}/update-name`, {
     method: "POST",

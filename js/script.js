@@ -9,6 +9,11 @@ function checkLog(){
     window.location.href = "log.html";
 }
 
+function checkRanking(){
+    document.getElementById("loading3").style.display = "flex";
+    window.location.href = "ranking.html";
+}
+
 function accountCheck(){
     document.getElementById("loading3").style.display = "flex";
     window.location.href = "account.html";

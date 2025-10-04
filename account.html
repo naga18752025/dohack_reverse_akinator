@@ -21,8 +21,8 @@
                 <div onclick="toSignUp()">新規登録</div>
             </div>
             <div id="explanation">ユーザー名とパスワードを入力してください</div>
-            <label>ユーザー名(本名禁止)<input type="text" id="username-input" placeholder="例：フクロウ"></label>
-            <label>パスワード<input type="password" id="password-input" placeholder="例：password123"></label>
+            <label class="input">ユーザー名(本名禁止)<input type="text" id="username-input" placeholder="例：フクロウ"></label>
+            <label class="input">パスワード<input type="password" id="password-input" placeholder="例：password123"></label>
             <button id="signin-button" onclick="checkSignIn()">ログイン</button>
             <button id="signup-button" onclick="checkSignUp()" style="display: none;">新規登録</button>
         </div>
@@ -38,6 +38,25 @@
                 <div>プレイ回数：<span id="play-count">?</span>回</div>
                 <div>正解数:<span id="correct-count">?</span>回</div>
                 <div>正解率：<span id="correct-rate">?</span>%</div>
+                <div id="permissions">
+                    <div>
+                        <label class="switch">
+                        <input type="radio" name="permission" id="permission1" value="none">
+                        ランキングで一切の情報を非表示
+                        </label>
+                        <label class="switch">
+                        <input type="radio" name="permission" id="permission2" value="name">
+                        ランキングでユーザー名/レベルを表示
+                        </label>
+                        <label class="switch">
+                        <input type="radio" name="permission" id="permission3" value="accuracy">
+                        ランキングでユーザー名/レベル/正解率を表示
+                        </label>
+                    </div>
+                    <button id="permission-button" onclick="changeRankingPolicy()">反映させる</button>
+                </div>
+
+
             </div>
             <div id="user-setting" style="display: none;">
                 <div id="change-name">ユーザー名を変更する</div>
@@ -47,7 +66,7 @@
                 <input type="password" id="new-password-input" placeholder="新しいパスワードを入力">
                 <button id="change-password-button" onclick="changePassword()">変更</button>
                 <div id="delete-account">アカウントを削除する</div>
-                <button id="delete-account-button" onclick="deleteAccountOrNot()">削除</button>
+                <button id="delete-account-button" onclick="deleteAccount()">削除</button>
             </div>
             <button id="signout-button" onclick="signOut()">ログアウト</button>
         </div>

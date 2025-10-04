@@ -67,11 +67,14 @@ async function updateStatus() {
             updateLevel(null);
             return;
         }
-        const playCount = parseInt(stats.play_count);
-        const correctCount = parseInt(stats.correct_count);
+        const playCount = stats.play_count;
+        const correctCount = stats.correct_count;
     
+
+        document.getElementById("level").textContent = stats.level;
         document.getElementById("play-count").textContent = playCount;
         document.getElementById("correct-count").textContent = correctCount;
+        document.getElementById("permissions").classList.add("show");
     
         if (playCount > 0) {
             const accuracy = Math.round((correctCount / playCount) * 1000) / 10;
@@ -80,30 +83,20 @@ async function updateStatus() {
             const accuracy = 0;
             document.getElementById("correct-rate").textContent = accuracy;
         }
+
+        if(stats.display_permission && stats.accuracy_display_permission){
+            document.getElementById("permission3").checked = true;
+        } else if(stats.display_permission && !stats.accuracy_display_permission){
+            document.getElementById("permission2").checked = true;
+        } else if(!stats.display_permission && !stats.accuracy_display_permission){
+            document.getElementById("permission1").checked = true;
+        }
     
-        updateLevel(correctCount);
     } catch {
         alert("アカウント情報を取得できませんでした");
-        updateLevel(null);
+        document.getElementById("level").textContent = "アクセス失敗";
     }
 
-}
-
-function updateLevel(correctCount) {
-    const levelEl = document.getElementById("level");
-    const c = parseInt(correctCount);
-
-    if (c <= 2)      levelEl.textContent = "Lv.1 見習い質問者";
-    else if (c <= 4)  levelEl.textContent = "Lv.2 ひよっこ推理家";
-    else if (c <= 9)  levelEl.textContent = "Lv.3 質問の旅人";
-    else if (c <= 19) levelEl.textContent = "Lv.4 ワードハンター";
-    else if (c <= 34) levelEl.textContent = "Lv.5 語彙の探偵";
-    else if (c <= 49) levelEl.textContent = "Lv.6 言葉のスナイパー";
-    else if (c <= 74) levelEl.textContent = "Lv.7 推理の達人";
-    else if (c <= 99) levelEl.textContent = "Lv.8 究極の質問者";
-    else if (c <= 149)levelEl.textContent = "Lv.9 言葉の探究王";
-    else if (c >= 150) levelEl.textContent = "Lv.10 逆アキネーター超越者";
-    else              levelEl.textContent = "情報取得失敗";
 }
 
 // 汎用リトライ関数
@@ -175,6 +168,27 @@ async function checkSignUp(){
     }
 }
 
+async function changeRankingPolicy(){
+    const selected = document.querySelector('input[name="permission"]:checked');
+    if (!selected) {
+        alert("どの設定にするか選んでください。");
+        return;
+    }
+    const newPolicy = selected.value;
+    if(confirm(`ランキングの表示設定を変更しますか？`)){
+        startLoading();
+        try {
+            await retryOperation(() => updateRankingSetting(localStorage.getItem("id"), newPolicy));
+            alert("ランキングの表示設定を変更しました。");
+            window.location.reload();
+        } catch (error) {
+            alert("ランキングの表示設定の変更に失敗しました。");
+            stopLoading();
+            return;
+        }
+    }
+}
+
 function signOut(){
     if(confirm("ログアウトしますか？")){
         startLoading();
@@ -239,7 +253,7 @@ async function changePassword(){
     }
 }
 
-async function deleteAccountOrNot(){
+async function deleteAccount(){
     if(confirm("アカウントを削除しますか？")){
         if(confirm("本当にアカウントを削除しますか？\nアカウントを削除するとこれまでのプレイ履歴も全て削除されます。")){
             startLoading();
