@@ -112,7 +112,7 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             console.log(`履歴取得 試行${attempt}回目`);
-            const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+            const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize, localStorage.getItem("id"));
             const sessions2 = await getPopularAnswers(null);
 
             if (sessions && sessions.length > 0 && sessions2 && sessions2.length > 0) {
@@ -144,7 +144,7 @@ async function loadInitialHistory(maxRetries = 5, retryInterval = 2000) {
 async function loadMoreHistory() {
     startLoading();
     try {
-        const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize);
+        const sessions = await getRecentSessionsWithQuestions(lastFetchedAt, pageSize, localStorage.getItem("id"));
 
         if (!sessions || sessions.length === 0) {
             alert("これ以上の履歴はありません。");
@@ -170,41 +170,45 @@ async function loadMoreHistory() {
 const modal = document.getElementById("modal");
 
 function modalOpen(targetId) {
-    const session = log.find(s => s.id === targetId);
-    const content = document.getElementById("modal-content");
-    content.innerHTML = "";
-    if ((!session.questions || session.questions.length === 0) && !session.hint) {
-        content.innerHTML = "<p>なし</p>";
-    } else {
-        let order = 1;
-        if(parseInt(session.hintposition) === 1){
-                const p = document.createElement("p");
-                p.innerHTML = `
-                ヒントを使用：${session.hint}
-                `;
-                p.style.color = "red";
-                content.appendChild(p);
-        }
-        session.questions.forEach(q => {
-
-            const p = document.createElement("p");
-            p.innerHTML = `
-            Q${order}: ${q.question}<br>
-            A: ${q.response}
-            `;
-            content.appendChild(p);
-            order++;
-            if(parseInt(session.hintposition) === order){
-                const p = document.createElement("p");
-                p.innerHTML = `
-                ヒントを使用：${session.hint}
-                `;
-                p.style.color = "red";
-                content.appendChild(p);
+    if(localStorage.getItem("id")){
+        const session = log.find(s => s.id === targetId);
+        const content = document.getElementById("modal-content");
+        content.innerHTML = "";
+        if ((!session.questions || session.questions.length === 0) && !session.hint) {
+            content.innerHTML = "<p>なし</p>";
+        } else {
+            let order = 1;
+            if(parseInt(session.hintposition) === 1){
+                    const p = document.createElement("p");
+                    p.innerHTML = `
+                    ヒントを使用：${session.hint}
+                    `;
+                    p.style.color = "red";
+                    content.appendChild(p);
             }
-        });
+            session.questions.forEach(q => {
+    
+                const p = document.createElement("p");
+                p.innerHTML = `
+                Q${order}: ${q.question}<br>
+                A: ${q.response}
+                `;
+                content.appendChild(p);
+                order++;
+                if(parseInt(session.hintposition) === order){
+                    const p = document.createElement("p");
+                    p.innerHTML = `
+                    ヒントを使用：${session.hint}
+                    `;
+                    p.style.color = "red";
+                    content.appendChild(p);
+                }
+            });
+        }
+        modal.classList.add('is-active');
+    }else{
+        alert("質問内容はログインしていないと見られません。");
     }
-    modal.classList.add('is-active');
 }
 
 function modalClose() {

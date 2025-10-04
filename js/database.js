@@ -32,11 +32,17 @@ async function addHint(sessionId, hintNumber) {
   }
 }
 
-async function getRecentSessionsWithQuestions(after = null, size = 15) {
-  const url = after 
-    ? `${API_URL}/get-recent-sessions?after=${encodeURIComponent(after)}&size=${size}`
-    : `${API_URL}/get-recent-sessions?size=${size}`;
+async function getRecentSessionsWithQuestions(after = null, size = 15, id = null) {
+  let url = `${API_URL}/get-recent-sessions?size=${size}`;
   
+  if (after) {
+    url += `&after=${encodeURIComponent(after)}`;
+  }
+
+  if (id !== null) {
+    url += `&id=${id}`;
+  }
+
   const res = await fetch(url);
   if (!res.ok) return null;
   return await res.json();

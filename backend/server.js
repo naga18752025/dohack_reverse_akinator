@@ -480,7 +480,9 @@ app.post("/add-hint", async (req, res) => {
 app.get("/get-recent-sessions", async (req, res) => {
   const size = parseInt(req.query.size || "15");
   const after = req.query.after || null;
+  const userId = req.query.id;
 
+  // セッション履歴取得
   const { data, error } = await supabase.rpc("fetch_magic_sessions", {
     p_limit: size,
     p_after: after
@@ -488,10 +490,40 @@ app.get("/get-recent-sessions", async (req, res) => {
 
   if (error) return res.status(500).json({ error: error.message });
 
+  // アカウント存在チェック
+  let hasAccount = false;
+  if (userId) {
+    const { data: existingUser, error: selectError } = await supabase
+      .from("account")
+      .select()
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (selectError) {
+      return res.status(500).json({ error: "エラー" });
+    }
+    hasAccount = !!existingUser;
+  }
+
   const sanitized = data.map((item, index) => {
     const isLast = index === data.length - 1;
     const { created_at, ...rest } = item;
-    return isLast ? { ...rest, created_at } : rest;
+
+    let safeRest;
+
+    if (hasAccount) {
+      safeRest = rest;
+    } else {
+      safeRest = {
+        ...rest,
+        questions: rest.questions.map(q => ({
+          question: "",
+          response: ""
+        }))
+      };
+    }
+
+    return safeRest;
   });
 
   res.json(sanitized);
