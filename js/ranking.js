@@ -19,6 +19,11 @@ function stopLoading() {
     document.getElementById("reload-inner").classList.remove("reload-inner");
 }
 
+function accountCheck(){
+    document.getElementById("loading3").style.display = "flex";
+    window.location.href = "account.html";
+}
+
 function back(){
     document.getElementById("loading3").style.display = "flex";
     window.location.href = "index.html";
